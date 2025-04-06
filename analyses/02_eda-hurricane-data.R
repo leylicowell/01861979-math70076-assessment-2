@@ -148,12 +148,12 @@ ggplot() +
   # Base world map 
   geom_polygon(data = world, aes(x = long, y = lat, group = group), 
                fill = "beige", col = "#808080", linewidth = 0.2) +  
-  theme(panel.background = element_rect(fill = "lightblue", color = NA),
+  theme(panel.background = element_rect(fill = "#86B3CD", color = NA),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   
   geom_path(data = landfall_data, aes(x = LON, y = LAT, 
                                       group = STORM_ID, color = WIND), 
-            size = 0.5, alpha = 0.5) +
+            size = 0.5, alpha = 0.7) +
   scale_color_gradient(low = "green", high = "red") + 
   coord_cartesian( xlim = c(-180, 160), ylim = c(-5, 70)) + 
   labs(title = "Hurricane Tracks with Wind Speed (Pacific-Centric)",
@@ -161,7 +161,7 @@ ggplot() +
   theme(legend.position = "right")
 
 
-
+ggsave(here("outputs", "landfall-map.pdf"), height = 4, width = 10, dpi=300)
 
 
 
