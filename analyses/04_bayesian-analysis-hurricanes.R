@@ -370,7 +370,7 @@ model_summary$MONTH <- factor(model_summary$MONTH,
                               levels = month.name)  
 
 # plot posterior predictive check for each year and each race & ethnicity
-p <- ggplot(model_summary, aes(x = as.factor(YEAR))) + 
+p1 <- ggplot(model_summary, aes(x = as.factor(YEAR))) + 
   geom_boxplot( aes( group = YEAR, 
                      ymin = q_lower, 
                      lower = iqr_lower,
@@ -387,10 +387,10 @@ p <- ggplot(model_summary, aes(x = as.factor(YEAR))) +
   facet_grid(MONTH ~ ., labeller = label_wrap_gen(20)) + 
   theme_bw()
 
-p
+p1
 
-p <- ggsave(here("outputs", "bayesian-analysis-hurricanes","post-pred-checks.pdf"), 
-            plot = p, 
+p1 <- ggsave(here("outputs", "bayesian-analysis-hurricanes","post-pred-checks.pdf"), 
+            plot = p1, 
             height = 10, 
             width = 10, 
             dpi=300)
@@ -501,7 +501,35 @@ webshot(here("outputs",
              "bayesian-analysis-hurricanes", 
              "forecasts-landfalls.pdf"))
 
+
 #==============================================================================
-# Summary statistics for observed and forecasted landfalls
+# posterior predictive density for number of landfalls 2025
 #==============================================================================
 
+forecast_2025 <- subset(landfalls[301:360], select = c('MONTH', 'YEAR', 'PRED_ID')) %>%
+  filter(YEAR == 2025)
+
+
+forecast_2025 <- merge(logpoi_hsgp_model_lambda_star,
+                                    forecast_2025,
+                                    by = "PRED_ID")
+
+# reorder months in chronological order
+forecast_2025$MONTH <- factor(forecast_2025$MONTH, levels = month.name)  
+forecast_2025 <- forecast_2025[order(forecast_2025$MONTH), ]
+
+p2 <- ggplot(forecast_2025, aes(x = post_pred)) +
+  geom_histogram(aes(y = ..density..), binwidth = 1, fill = "steelblue", alpha = 0.7, color = "black") +
+  facet_wrap(~ MONTH, ncol = 3) +  # Create a separate plot for each month
+  theme_bw() +
+  labs(title = "Posterior Density Plots for 2025 Landfall Predictions", 
+       x = "Number of Landfalls, L", y = "P(L)") +
+  theme(legend.position = "none")
+
+p2
+
+ggsave(here("outputs", "bayesian-analysis-hurricanes", "landfall-density-plots.pdf"), 
+       plot =p2,
+       height = 10, 
+       width = 10, 
+       dpi=300)
