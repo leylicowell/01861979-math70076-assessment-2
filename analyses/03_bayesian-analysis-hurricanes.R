@@ -519,7 +519,7 @@ forecast_2025$MONTH <- factor(forecast_2025$MONTH, levels = month.name)
 forecast_2025 <- forecast_2025[order(forecast_2025$MONTH), ]
 
 p2 <- ggplot(forecast_2025, aes(x = post_pred)) +
-  geom_histogram(aes(y = ..density..), binwidth = 1, fill = "steelblue", alpha = 0.7, color = "black") +
+  geom_histogram(aes(y = after_stat(density)), binwidth = 1, fill = "steelblue", alpha = 0.7, color = "black") +
   facet_wrap(~ MONTH, ncol = 3) +  # Create a separate plot for each month
   theme_bw() +
   labs(title = "Posterior Density Plots for 2025 Landfall Predictions", 
