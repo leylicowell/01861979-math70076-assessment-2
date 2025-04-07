@@ -8,6 +8,7 @@ library(magrittr)
 library(here)
 library(tidyr)
 library(ggplot2)
+library(stringr)
 
 
 #==============================================================================
@@ -28,7 +29,7 @@ cyclones_per_year <- hurricane_data %>%
   summarise(CYCLONE_NUM = n())
 
 # Plot
-ggplot(cyclones_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
+p1 <- ggplot(cyclones_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
   geom_col(fill = "steelblue") +
   labs(title = "Number of Cyclones Per Year",
        x = "Year",
@@ -36,7 +37,11 @@ ggplot(cyclones_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
   theme_minimal()
 
 # save output
-ggsave(here("outputs", "cyclones-per-year.pdf"), height = 4.5, width = 6, dpi=300)
+ggsave(here("outputs", "cyclones-per-year.pdf"), 
+       plot = p1, 
+       height = 4.5, 
+       width = 6, 
+       dpi=300)
 
 
 #==============================================================================
@@ -69,20 +74,22 @@ avg_cyclones_per_month <- avg_cyclones_per_month %>%
 
 
 # plot average number of cyclones per month
-ggplot(avg_cyclones_per_month, aes(x = factor(MONTH, levels = MONTH), 
-                                   y = AVG_CYCLONES)) +
+p2 <- ggplot(avg_cyclones_per_month, aes(x = factor(MONTH, levels = MONTH), 
+                                         y = AVG_CYCLONES)) +
   geom_col(fill = "steelblue") +
   labs(title = "Average Number of Cyclones Per Month",
        x = "Month",
        y = "Average Number of Cyclones") +
-  theme_minimal() + theme(axis.text.x = element_text(angle = 45,
-                                                     vjust = 1,
-                                                     hjust = 1))
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1))
 
 # we see a significant increase in the number of cyclones in July-October
 
 # save output
-ggsave(here("outputs", "avg-cyclones-per-month.pdf"), height = 4.5, width = 6, dpi=300)
+ggsave(here("outputs", "avg-cyclones-per-month.pdf"), 
+       plot = p2,
+       height = 4.5,
+       width = 6, dpi=300)
 
 #==============================================================================
 # we now want to look closer into cyclone that landfall
@@ -107,7 +114,7 @@ landfall_summary <- landfall_statistics %>%
   summarise(NUM = n())
 
 # plot results
-ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = NUM)) +
+p3 <- ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = NUM)) +
   geom_col(fill = "steelblue") +
   labs(title = "Number of Landfalling Cyclones by Landfall Frequency, 2000-2024",
        x = "Number of Landfalls",
@@ -115,7 +122,11 @@ ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = NUM)) 
   theme_minimal()
 
 # save output
-ggsave(here("outputs", "nbr-cyclone-landfalls.pdf"), height = 4.5, width = 6, dpi=300)
+ggsave(here("outputs", "nbr-cyclone-landfalls.pdf"), 
+       plot = p3, 
+       height = 4.5, 
+       width = 6, 
+       dpi=300)
 
 #==============================================================================
 # we also want to inspect cyclone paths for cyclones that landfall
@@ -144,24 +155,35 @@ landfall_data <- landfall_data %>%
                       format = "%Y %m %d %H %M"))
 
 # plot map
-ggplot() +
+p4 <- ggplot() +
   # Base world map 
-  geom_polygon(data = world, aes(x = long, y = lat, group = group), 
-               fill = "beige", col = "#808080", linewidth = 0.2) +  
+  geom_polygon(data = world,
+               aes(x = long, y = lat, group = group), 
+               fill = "beige", 
+               col = "#808080", 
+               size = 0.2) +  
   theme(panel.background = element_rect(fill = "#86B3CD", color = NA),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   
-  geom_path(data = landfall_data, aes(x = LON, y = LAT, 
-                                      group = STORM_ID, color = WIND), 
+  geom_path(data = landfall_data, aes(x = LON, 
+                                      y = LAT, 
+                                      group = STORM_ID, 
+                                      color = WIND), 
             size = 0.5, alpha = 0.7) +
   scale_color_gradient(low = "green", high = "red") + 
   coord_cartesian( xlim = c(-180, 160), ylim = c(-5, 70)) + 
   labs(title = "Hurricane Tracks with Wind Speed (Pacific-Centric)",
-       x = "Longitude", y = "Latitude", color = "Wind Speed (knots)") +
+       x = "Longitude", 
+       y = "Latitude", 
+       color = "Wind Speed (knots)") +
   theme(legend.position = "right")
 
 
-ggsave(here("outputs", "landfall-map.pdf"), height = 4, width = 10, dpi=300)
+ggsave(here("outputs", "landfall-map.pdf"), 
+       plot =p4,
+       height = 4, 
+       width = 10, 
+       dpi=300)
 
 
 

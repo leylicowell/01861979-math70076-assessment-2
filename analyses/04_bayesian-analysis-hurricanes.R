@@ -9,11 +9,13 @@ library(hexbin)  # for plotting pair plots
 library(bayesplot)  # for plotting Stan outputs
 library(kableExtra)  # for tables
 library(cmdstanr)  # for Stan
+library(webshot2) # for saving kbl tables
 library(here)
 library(dplyr)
 library(magrittr)
 library(tidyr)
 library(readr)
+
 
 # set colour scheme for Stan
 bayesplot::color_scheme_set("brewer-RdYlBu")
@@ -251,6 +253,28 @@ kbl(model_summary, caption = 'Model diagnostics', longtable = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
                 font_size = 12) 
 
+# table of 5 worst performing parameters
+t1 <- kbl(subset(model_summary[1:5,], 
+    select = c(variable, rhat, ess_bulk, ess_tail)),
+    caption = 'Model diagnostics for 5 worst performing parameters', 
+    longtable = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                font_size = 12) 
+
+t1
+
+save_kable(t1, file = here("outputs", 
+                           "bayesian-analysis-hurricanes", 
+                           "model-diagnostics-landfalls-nbr.html"))
+
+# use webshot to capture the html table as a pdf
+webshot(here("outputs", 
+             "bayesian-analysis-hurricanes", 
+             "model-diagnostics-landfalls-nbr.html"), 
+        here("outputs", 
+             "bayesian-analysis-hurricanes", 
+             "model-diagnostics-landfalls-nbr.pdf"))
+
 # plot traces of parameter with smallest ess_bulk
 # extract samples
 model_draws <- logpoi_hsgp_model_fit$draws(
@@ -265,13 +289,29 @@ model_draws <- logpoi_hsgp_model_fit$draws(
 # make trace plots of worst performing parameter
 model1_worst_var <- model_summary$variable[ which.min(model_summary$ess_bulk)]
 
-p <- bayesplot:::mcmc_trace(model_draws,  
+bayesplot:::mcmc_trace(model_draws,  
                             pars = model1_worst_var, 
                             n_warmup = 500, 
-                            facet_args = list(nrow = 1))
+                            facet_args = list(nrow = 1))+ 
+  theme_bw() + 
+  coord_cartesian(ylim = c(-0.5, 10))
 
-p + theme_bw() + coord_cartesian(ylim = c(-0.5, 10))
+#-------------------------------------------------------------------------------
+# pairwise posterior geometry of 4 worst performing parameters
+#-------------------------------------------------------------------------------
 
+worst_param <- model_summary[1:4,]$variable
+model_draws <- logpoi_hsgp_model_fit$draws(
+  variables = worst_param,inc_warmup = FALSE,
+  format = "draws_array")
+
+bayesplot::color_scheme_set('viridisC')
+bayesplot::mcmc_pairs(model_draws, 
+                      pars = worst_param, 
+                      diag_fun = "dens", 
+                      off_diag_fun = "hex") 
+
+# no tight hyperplanes and identifiability issues
 
 #-------------------------------------------------------------------------------
 # posterior predictive checks
@@ -330,7 +370,7 @@ model_summary$MONTH <- factor(model_summary$MONTH,
                               levels = month.name)  
 
 # plot posterior predictive check for each year and each race & ethnicity
-ggplot(model_summary, aes(x = as.factor(YEAR))) + 
+p <- ggplot(model_summary, aes(x = as.factor(YEAR))) + 
   geom_boxplot( aes( group = YEAR, 
                      ymin = q_lower, 
                      lower = iqr_lower,
@@ -346,6 +386,14 @@ ggplot(model_summary, aes(x = as.factor(YEAR))) +
        colour = 'within\n95% posterior\nprediction\ninterval') +
   facet_grid(MONTH ~ ., labeller = label_wrap_gen(20)) + 
   theme_bw()
+
+p
+
+p <- ggsave(here("outputs", "bayesian-analysis-hurricanes","post-pred-checks.pdf"), 
+            plot = p, 
+            height = 10, 
+            width = 10, 
+            dpi=300)
                                   
 
 #-------------------------------------------------------------------------------
@@ -406,3 +454,54 @@ kbl(forecast_summary,
     caption = 'Forecasted number of landfalls per month in the next 5 years', 
     longtable = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), font_size = 12)
+
+
+# create median and 95\% credible intervals for variables 
+# using AGGREGATION over .draws for total monthly forecasts over 2025-2029
+total_monthly_draws <- left_join(logpoi_hsgp_model_lambda_star,
+                                   subset(landfalls[301:360], select = c(PRED_ID,MONTH)), 
+                                   by = "PRED_ID" )
+
+monthly_sums <- total_monthly_draws %>%
+  group_by(.draw, MONTH) %>%
+  summarise(month_total = sum(post_pred), .groups = "drop")
+
+monthly_sums <- as.data.table(monthly_sums)
+
+total_monthly_summary <- monthly_sums[,list( 
+  summary_value = quantile(month_total, prob =c(0.025, 0.25,  0.5, 0.75, 0.975)),
+  summary_name = c('2.5% quantile', 'IQR_lower','median', 'IQR_upper', '97.5% quantile')),
+  by = 'MONTH']
+
+total_monthly_summary <- data.table::dcast(
+  total_monthly_summary, 
+  MONTH ~ summary_name, 
+  value.var = 'summary_value')
+
+# reorder months in chronological order
+total_monthly_summary$MONTH <- factor(total_monthly_summary$MONTH, levels = month.name)  
+total_monthly_summary <- total_monthly_summary[order(total_monthly_summary$MONTH), ]
+
+t2 <- kbl(total_monthly_summary, 
+    caption = 'Total forecasted number of landfalls per month in the next 5 years', 
+    longtable = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), font_size = 12)
+
+t2
+
+save_kable(t2, file = here("outputs", 
+                           "bayesian-analysis-hurricanes", 
+                           "forecasts-landfalls.html"))
+
+# use webshot to capture the html table as a pdf
+webshot(here("outputs", 
+             "bayesian-analysis-hurricanes", 
+             "forecasts-landfalls.html"), 
+        here("outputs", 
+             "bayesian-analysis-hurricanes", 
+             "forecasts-landfalls.pdf"))
+
+#==============================================================================
+# Summary statistics for observed and forecasted landfalls
+#==============================================================================
+
