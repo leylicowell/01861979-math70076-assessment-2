@@ -1,6 +1,6 @@
 # in this script, we perform an exploratory data analysis of our cyclone
 # track data from the HURDAT2 data set
-# we are interested in the number of cyclones per year, how many make landfall 
+# we are interested in the number of cyclone landfalls per year
 # and any seasonality effects
 
 library(dplyr)
@@ -9,6 +9,8 @@ library(here)
 library(tidyr)
 library(ggplot2)
 library(stringr)
+library(data.table)
+library(scales)
 
 
 #==============================================================================
@@ -165,8 +167,8 @@ p4 <- ggplot() +
                aes(x = long, y = lat, group = group), 
                fill = "beige", 
                col = "#808080", 
-               size = 0.2) +  
-  theme(panel.background = element_rect(fill = "#86B3CD", color = NA),
+               linewidth = 0.2) +  
+  theme(panel.background = element_rect(fill = "#3f7ec0", color = NA),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   
   geom_path(data = landfall_data, aes(x = LON, 
@@ -174,7 +176,9 @@ p4 <- ggplot() +
                                       group = STORM_ID, 
                                       color = WIND), 
             size = 0.5, alpha = 0.7) +
-  scale_color_gradient(low = "green", high = "red") + 
+  scale_color_gradientn(colours = c("#94d6f8", "cyan","#fbff9f","#f8e007","#fd9920","#ff1f2d", "#ee00ff"),
+                        values = rescale(c(0, 33, 63, 82, 95, 112, 137)),
+                        limits = c(0, 137)) + 
   coord_cartesian( xlim = c(-180, 160), ylim = c(-5, 70)) + 
   labs(title = "Landfall Hurricane Tracks with Wind Speed, 2000-2024",
        x = "Longitude", 
@@ -182,6 +186,7 @@ p4 <- ggplot() +
        color = "Wind Speed (knots)") +
   theme(legend.position = "right")
 
+p4
 
 ggsave(here("outputs", "eda-hurricane-data", "landfall-map.pdf"), 
        plot =p4,
