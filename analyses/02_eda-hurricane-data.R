@@ -19,77 +19,80 @@ hurricane_data <- read.csv(here("data", "derived", "hurricane-data.csv"))
 
 
 #==============================================================================
-# we want to plot the number of cyclones per year from 2000-2024 
+# we want to plot the number of landfalls per year from 2000-2024 
 #==============================================================================
 
-cyclones_per_year <- hurricane_data %>%
+landfalls_per_year <- hurricane_data %>%
+  filter(RECORD_ID == "L") %>%
   group_by(YEAR, STORM_ID) %>%
-  summarise() %>%
+  summarise(.groups = "drop") %>%
   group_by(YEAR) %>%
-  summarise(CYCLONE_NUM = n())
+  summarise(CYCLONE_NUM = n(), .groups = "drop")
 
 # Plot
-p1 <- ggplot(cyclones_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
+p1 <- ggplot(landfalls_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
   geom_col(fill = "steelblue") +
-  labs(title = "Number of Cyclones Per Year",
+  labs(title = "Number of Cyclone Landfalls Per Year",
        x = "Year",
-       y = "Number of Cyclones") +
+       y = "Number of Landfalls") +
   theme_minimal()
 
+p1
+
 # save output
-ggsave(here("outputs", "cyclones-per-year.pdf"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfalls-per-year.pdf"), 
        plot = p1, 
        height = 4.5, 
-       width = 6, 
+       width = 7, 
        dpi=300)
 
 
 #==============================================================================
-# since cyclone numbers have stayed relatively constant (besides two peaks)
-# over the years, we check for a monthly seasonality component 
+# we check for a monthly seasonality component 
 #==============================================================================
 
-# calculate average number of cyclones per month (across 2000-2024)
-cyclones_per_month_and_year <- hurricane_data %>%
-  group_by(YEAR, MONTH, STORM_ID) %>%
-  summarise() %>%
+# calculate average number of cyclone landfalls per month (across 2000-2024)
+landfalls_per_month_and_year <- hurricane_data %>%
+  filter(RECORD_ID == "L") %>%
   group_by(YEAR, MONTH) %>%
-  summarise(CYCLONE_NUM = n())
-
-avg_cyclones_per_month <- cyclones_per_month_and_year %>%
-  group_by(MONTH) %>%
-  summarise(AVG_CYCLONES = mean(CYCLONE_NUM))
+  summarise(LANDFALL_NUM = n(), .groups = "drop")
 
 # we notice some months are missing from our data set
 # this is because no cyclones occurred in those months
-# we now add the missing months with an avg cyclone count of zero
-all_months <- data.frame(MONTH = 1:12)
-avg_cyclones_per_month <- left_join(all_months, 
-                                        avg_cyclones_per_month, 
-                                        by = "MONTH")
+# we now add the missing months with a count of zero
+all_months_years <- CJ(MONTH = 1:12, YEAR = 2000:2024)
 
-# replace month numbers with month names
-avg_cyclones_per_month <- avg_cyclones_per_month %>%
-  mutate(AVG_CYCLONES = replace_na(AVG_CYCLONES, 0), MONTH = month.name)
+# also replace month numbers with month names
+landfalls_per_month_and_year <- left_join(all_months_years, 
+                                    landfalls_per_month_and_year, 
+                                    by = c("MONTH", "YEAR"))
+
+landfalls_per_month_and_year <- landfalls_per_month_and_year %>%
+  mutate(LANDFALL_NUM = replace_na(LANDFALL_NUM, 0), MONTH = month.name[MONTH])
+
+avg_landfalls_per_month <- landfalls_per_month_and_year %>%
+  group_by(MONTH) %>%
+  summarise(AVG_LANDFALLS = mean(LANDFALL_NUM))
 
 
 # plot average number of cyclones per month
-p2 <- ggplot(avg_cyclones_per_month, aes(x = factor(MONTH, levels = MONTH), 
-                                         y = AVG_CYCLONES)) +
+p2 <- ggplot(avg_landfalls_per_month, aes(x = factor(MONTH, levels = month.name), 
+                                         y = AVG_LANDFALLS)) +
   geom_col(fill = "steelblue") +
-  labs(title = "Average Number of Cyclones Per Month",
+  labs(title = "Average Number of Landfalls Per Month, averaging across 2000-2024",
        x = "Month",
-       y = "Average Number of Cyclones") +
+       y = "Average Number of Landfalls") +
   theme_minimal() + 
   theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1))
 
+p2
 # we see a significant increase in the number of cyclones in July-October
 
 # save output
-ggsave(here("outputs", "avg-cyclones-per-month.pdf"), 
+ggsave(here("outputs", "eda-hurricane-data", "avg-landfalls-per-month.pdf"), 
        plot = p2,
        height = 4.5,
-       width = 6, dpi=300)
+       width = 7, dpi=300)
 
 #==============================================================================
 # we now want to look closer into cyclone that landfall
@@ -117,15 +120,16 @@ landfall_summary <- landfall_statistics %>%
 p3 <- ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = NUM)) +
   geom_col(fill = "steelblue") +
   labs(title = "Number of Landfalling Cyclones by Landfall Frequency, 2000-2024",
-       x = "Number of Landfalls",
+       x = "Number of Landfalls per Cyclone",
        y = "Number of Cyclones") +
   theme_minimal()
 
+p3
 # save output
-ggsave(here("outputs", "nbr-cyclone-landfalls.pdf"), 
+ggsave(here("outputs","eda-hurricane-data", "nbr-cyclone-landfalls.pdf"), 
        plot = p3, 
        height = 4.5, 
-       width = 6, 
+       width = 7, 
        dpi=300)
 
 #==============================================================================
@@ -172,14 +176,14 @@ p4 <- ggplot() +
             size = 0.5, alpha = 0.7) +
   scale_color_gradient(low = "green", high = "red") + 
   coord_cartesian( xlim = c(-180, 160), ylim = c(-5, 70)) + 
-  labs(title = "Hurricane Tracks with Wind Speed (Pacific-Centric)",
+  labs(title = "Landfall Hurricane Tracks with Wind Speed, 2000-2024",
        x = "Longitude", 
        y = "Latitude", 
        color = "Wind Speed (knots)") +
   theme(legend.position = "right")
 
 
-ggsave(here("outputs", "landfall-map.pdf"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfall-map.pdf"), 
        plot =p4,
        height = 4, 
        width = 10, 
