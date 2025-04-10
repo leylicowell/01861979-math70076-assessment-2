@@ -162,7 +162,7 @@ landfall_data <- landfall_data %>%
 
 # plot map
 p4 <- ggplot() +
-  # Base world map 
+  # world map 
   geom_polygon(data = world,
                aes(x = long, y = lat, group = group), 
                fill = "beige", 
@@ -175,11 +175,11 @@ p4 <- ggplot() +
                                       y = LAT, 
                                       group = STORM_ID, 
                                       color = WIND), 
-            size = 0.5, alpha = 0.7) +
+            size = 0.3, alpha = 0.7) +
   scale_color_gradientn(colours = c("#94d6f8", "cyan","#fbff9f","#f8e007","#fd9920","#ff1f2d", "#ee00ff"),
                         values = rescale(c(0, 33, 63, 82, 95, 112, 137)),
                         limits = c(0, 137)) + 
-  coord_cartesian( xlim = c(-180, 160), ylim = c(-5, 70)) + 
+  coord_cartesian( xlim = c(-175, 40), ylim = c(0, 70)) + 
   labs(title = "Landfall Hurricane Tracks with Wind Speed, 2000-2024",
        x = "Longitude", 
        y = "Latitude", 
@@ -192,7 +192,7 @@ ggsave(here("outputs", "eda-hurricane-data", "landfall-map.pdf"),
        plot =p4,
        height = 4, 
        width = 10, 
-       dpi=300)
+       dpi=600)
 
 
 
