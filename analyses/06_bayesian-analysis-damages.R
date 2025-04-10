@@ -15,6 +15,9 @@ library(magrittr)
 library(tidyr)
 library(readr)
 library(stringr)
+library(geosphere)
+library(corrr)
+library(forcats)
 
 
 # set colour scheme for Stan
@@ -32,8 +35,7 @@ data <- read.csv(here("data", "derived", "merged-data.csv"))
 # damages
 #==============================================================================
 
-# calculate duration of each hurricane in hours
-
+# reformat date and time to calculate duration
 data <- data %>%
   mutate(TIME = sprintf("%04s", as.integer(TIME)),
          DATE_TIME = as.POSIXct(paste(YEAR, 
@@ -43,16 +45,8 @@ data <- data %>%
                                       str_sub(TIME, 3, 4)),
                                 format = "%Y %m %d %H %M"))
 
-storm_duration <- data %>%
-  group_by(STORM_ID) %>%
-  summarise(duration_hours = as.numeric(difftime(max(DATE_TIME), 
-                                                 min(DATE_TIME), 
-                                                 units = "hours")),
-            .groups = "drop")
 
-library(geosphere)
-
-curvature <- data %>%
+storm_predictors <- data %>%
   arrange(STORM_ID, DATE_TIME) %>%
   group_by(STORM_ID, NAME)%>%
   mutate(
@@ -69,31 +63,50 @@ curvature <- data %>%
     duration_h = as.numeric(difftime(max(DATE_TIME), min(DATE_TIME), units = "hours")),
     .groups = "drop")
 
+# extract relevant columns for pairwise correlation plot
+corr_matrix <- storm_predictors %>%
+  select("avg_landfall_wind", 
+         "total_bearing_change", 
+         "duration_h", 
+         "total_damage")%>%
+  correlate(diagonal = 1) %>%
+  shave(upper = FALSE)
+
+corr_matrix<- corr_matrix %>%
+  pivot_longer(cols = -term,
+               names_to = "colname",
+               values_to = "corr") %>%
+  mutate(rowname = fct_inorder(term),
+         colname = fct_inorder(colname),
+         label = if_else(is.na(corr), "", sprintf("%1.2f", corr)))
+
+p1 <- ggplot(corr_matrix, aes(rowname, fct_rev(colname),
+                 fill = corr)) +
+  geom_tile() +
+  geom_text(aes(
+    label = label,
+    color = abs(corr) < .75
+  )) +
+  coord_fixed(expand = FALSE) +
+  scale_color_manual(
+    values = c("white", "black"),
+    guide = "none"
+  ) +
+  scale_fill_distiller(
+    palette = "PuOr", na.value = "white",
+    direction = 1, limits = c(-1, 1),
+    name = "Pearson\nCorrelation:"
+  ) +
+  labs(x = NULL, y = NULL) +
+  theme(panel.border = element_rect(color = NA, fill = NA),
+        legend.position = c(.85, .8))
+
+ggsave(here("outputs", "bayesian-analysis-damages", "correlation-plot.pdf"), 
+       plot =p1,
+       height = 7, 
+       width = 7, 
+       dpi=600)
+
+
 
     
-
-,
-    next_lon = lead(LON),
-    bearing = bearing(cbind(LON, LAT), cbind(next_lon, next_lat)),
-    bearing_diff = abs(bearing - lag(bearing)),
-    # Normalize angle to max 180 (angles wrap around at 360)
-    bearing_diff = ifelse(bearing_diff > 180, 360 - bearing_diff, bearing_diff)
-  )
-
-%>%
-  summarise(
-    curvature = sum(bearing_diff, na.rm = TRUE),
-    avg_wind = mean(WIND[RECORD_ID =="L"]),
-    total_damage = first(ADJ_TOTAL_DAMAGE),
-    duration_hours = as.numeric(difftime(max(DATE_TIME), min(DATE_TIME), units = "hours")),
-    .groups = "drop"
-  )
-
-
-
-
-
-
-
-
-
