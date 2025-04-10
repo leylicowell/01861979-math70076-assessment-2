@@ -15,7 +15,6 @@ library(tidyr)
 library(readr)
 library(stringr)
 library(readxl)
-library(mice)
 
 #------------------------------------------------------------------------------
 # load data

@@ -111,8 +111,6 @@ landfall_us <- subset(landfall_us, select = c("STORM_ID",
 # add back longitude and latitude coordinates
 landfall_us <- left_join(landfall_us, landfall_data, by = colnames(landfall_us))
 
-
-
 # plot map
 p3 <- ggplot() +
   geom_polygon(data = world,
@@ -143,8 +141,6 @@ ggsave(here("outputs", "eda-economic-data", "landfall-locations.pdf"),
        height = 4, 
        width = 10, 
        dpi=600)
-
-
 
 
 

@@ -6,7 +6,6 @@ library(here)
 library(tidyr)
 library(stringr)
 library(data.table)
-library(mice)
 
 #==============================================================================
 # we load our data set
