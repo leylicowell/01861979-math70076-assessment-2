@@ -102,13 +102,8 @@ damage_values <- US_econ_data[US_econ_data$NAME %in% missing_hurricanes$NAME, ]$
 
 US_data$ADJ_TOTAL_DAMAGE[which(is.na(US_data$ADJ_TOTAL_DAMAGE) & US_data$NAME != "Bill")] = damage_values
 
-# no info found online regarding hurricane Bill damages and since data is MNAR 
-# standard imputation methods lead to high bias
-# multiple imputation also leads to significantly incorrect results (damages in billions)
-# which we know to be incorrect due to its absence from our US_econ_data 
-# (which is a list of all hurricanes causing >1 billion $ in damages)
-# as such, since this is only one data point, we choose to ignore it in our data for now,
-# and to try and estimate it using a bayesian regression model we will fit in our analysis
+# although Bill is on the EM-DAT list, it has missing damages value and it does 
+# not landfall in the US (our analysis is on US economical damages from landfall cyclones)
 
 #------------------------------------------------------------------------------
 # we choose to save our new data set as a .csv to facilitate readability and to 

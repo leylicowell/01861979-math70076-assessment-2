@@ -86,6 +86,7 @@ ggsave(here("outputs", "eda-economic-data", "us-damages-per-cyclone.pdf"),
 world <- map_data("world")
 
 # we now select all hurricane landfall locations in the US from our list
+# as some hurricanes could have landfalls in the US and other countries
 landfall_data <- merged_data %>%
   filter(RECORD_ID == "L") 
 us_boundary <- ne_countries(country = "United States of America", returnclass = "sf")
