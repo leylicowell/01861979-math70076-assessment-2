@@ -42,5 +42,11 @@ missing_idx <- which(is.na(landfalls$COUNTRY))
 nearest_countries_idx <- st_nearest_feature(landfalls_sf[missing_idx, ], countries)
 landfalls$COUNTRY[missing_idx] <- countries$name_long[nearest_countries_idx]
 
+#==============================================================================
+# save data set
+#==============================================================================
 
+write.csv(landfalls, 
+          file = file.path(here("data", "derived"), "landfall-data.csv"), 
+          row.names = FALSE)
 
