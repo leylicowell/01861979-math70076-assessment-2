@@ -25,6 +25,7 @@ bayesplot::color_scheme_set("brewer-RdYlBu")
 #==============================================================================
 
 hurricane_data <- read.csv(here("data", "derived", "hurricane-data.csv"))
+landfall_data <- read.csv(here("data", "derived", "landfall-data.csv"))
 
 #===============================================================================
 # Bayesian poisson random effects model for number of landfalls per year
@@ -152,8 +153,7 @@ logpoi_hsgp_model_text <- "
 # define data in format needed for Stan model
 #-------------------------------------------------------------------------------
 
-landfalls <- hurricane_data %>%
-  filter(RECORD_ID == "L") %>%
+landfalls <- landfall_data %>%
   group_by(YEAR, MONTH) %>%
   summarise(LANDFALL_COUNT = n(), .groups = "drop")
 
