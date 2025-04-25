@@ -19,15 +19,12 @@ library(scales)
 
 hurricane_data <- read.csv(here("data", "derived", "hurricane-data.csv"))
 
-
 #==============================================================================
-# we want to plot the number of landfalls per year from 2000-2024 
+# we want to plot the number of landfalls per year from 1900-2024 
 #==============================================================================
 
 landfalls_per_year <- hurricane_data %>%
   filter(RECORD_ID == "L") %>%
-  group_by(YEAR, STORM_ID) %>%
-  summarise(.groups = "drop") %>%
   group_by(YEAR) %>%
   summarise(CYCLONE_NUM = n(), .groups = "drop")
 
@@ -88,7 +85,7 @@ p2 <- ggplot(avg_landfalls_per_month, aes(x = factor(MONTH, levels = month.name)
   theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1))
 
 p2
-# we see a significant increase in the number of cyclones in July-October
+# we see a significant increase in the number of cyclones in August-October
 
 # save output
 ggsave(here("outputs", "eda-hurricane-data", "avg-landfalls-per-month.pdf"), 
@@ -97,7 +94,7 @@ ggsave(here("outputs", "eda-hurricane-data", "avg-landfalls-per-month.pdf"),
        width = 7, dpi=300)
 
 #==============================================================================
-# we now want to look closer into cyclone that landfall
+# we now want to look closer into how many times cyclones landfall
 #==============================================================================
 
 # number of landfalls for each cyclone
@@ -135,7 +132,7 @@ ggsave(here("outputs","eda-hurricane-data", "nbr-cyclone-landfalls.pdf"),
        dpi=300)
 
 #==============================================================================
-# we also want to inspect cyclone paths for cyclones that landfall
+# we also want to inspect cyclone paths for cyclones that landfall 2000-2024
 #==============================================================================
 
 # we load our world map data
@@ -175,7 +172,7 @@ p4 <- ggplot() +
                                       y = LAT, 
                                       group = STORM_ID, 
                                       color = WIND), 
-            size = 0.3, alpha = 0.7) +
+            linewidth = 0.3, alpha = 0.7) +
   scale_color_gradientn(colours = c("#94d6f8", "cyan","#fbff9f","#f8e007","#fd9920","#ff1f2d", "#ee00ff"),
                         values = rescale(c(0, 33, 63, 82, 95, 112, 137)),
                         limits = c(0, 137)) + 
@@ -193,8 +190,6 @@ ggsave(here("outputs", "eda-hurricane-data", "landfall-map.pdf"),
        height = 4, 
        width = 10, 
        dpi=600)
-
-
 
 
 
