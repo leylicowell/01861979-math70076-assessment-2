@@ -29,7 +29,10 @@ landfalls <- hurricane_data %>%
 
 landfalls_sf <- st_as_sf(landfalls, coords = c("LON", "LAT"), crs = 4326)
 
-countries <- ne_countries(scale = 'medium', returnclass = c("sf")) 
+# we are only interested in South/North America
+countries <- ne_countries(scale = 'medium', 
+                          returnclass = c("sf"), 
+                          continent = c("North America", "South America"))
 
 landfall_countries <- st_join(landfalls_sf, countries)
 
