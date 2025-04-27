@@ -33,6 +33,7 @@ countries <- ne_countries(scale = 'medium', returnclass = c("sf"))
 
 landfall_countries <- st_join(landfalls_sf, countries)
 
+# add countries to landfall data
 landfalls$COUNTRY <- landfall_countries$name_long
 
 #-------------------------------------------------------------------------------
