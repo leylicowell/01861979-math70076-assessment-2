@@ -1,9 +1,9 @@
 # In this script, we reformat the Atlantic and Pacific hurricane data from NHC, 
 # clean it and save it as a .csv file
 
-#------------------------------------------------------------------------------
-# load packages and functions
-#------------------------------------------------------------------------------
+#===============================================================================
+# load packages
+#===============================================================================
 
 library(dplyr)
 library(magrittr)
@@ -12,9 +12,9 @@ library(tidyr)
 library(readr)
 library(stringr)
 
-#------------------------------------------------------------------------------
+#===============================================================================
 # load data
-#------------------------------------------------------------------------------
+#===============================================================================
 
 #
 # HURDAT2 track data
@@ -24,11 +24,15 @@ library(stringr)
 atlantic_data <- read_lines(here("data", "raw", "atlantic-data.txt"))
 pacific_data <- read_lines(here("data", "raw", "pacific-data.txt"))
 
-#------------------------------------------------------------------------------
+#===============================================================================
+# reformat data sets
+#===============================================================================
+
+#-------------------------------------------------------------------------------
 # we focus on the relevant columns for our analysis to simplify our data frames
 # we also reformat our .txt data into a data frame object
 # the function below is only used in this .R file
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 reformat_txt <- function(data){
   
@@ -90,17 +94,17 @@ pacific_data <- reformat_txt(pacific_data)
 
 hurricane_data <- rbind(atlantic_data, pacific_data)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # we want to analyse hurricanes from 2000 onwards
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 hurricane_data <- hurricane_data %>%
   filter(as.integer(str_sub(DATE, 1, 4)) >= 2000)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # reformat specific columns to get values in correct str/numeric types as they
 # were loaded as character columns
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 hurricane_data$YEAR = as.integer(str_sub(hurricane_data$DATE, 1, 4))
 hurricane_data$MONTH = as.integer(str_sub(hurricane_data$DATE, 5, 6))
@@ -121,10 +125,10 @@ hurricane_data$LON[grep("E", hurricane_data$LON)] = lon_coord[grep("E", hurrican
 hurricane_data$LON = as.numeric(hurricane_data$LON)
 
 
-#------------------------------------------------------------------------------
+#===============================================================================
 # we choose to save our new data set as a .csv to facilitate readability and to 
 # facilitate using this data set on different platforms/with different software
-#------------------------------------------------------------------------------
+#===============================================================================
 
 write.csv(hurricane_data, 
           file = file.path(here("data", "derived"), "hurricane-data.csv"), 
