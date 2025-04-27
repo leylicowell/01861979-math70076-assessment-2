@@ -34,7 +34,8 @@ countries <- ne_countries(scale = 'medium', returnclass = c("sf"))
 landfall_countries <- st_join(landfalls_sf, countries)
 
 # add countries to landfall data
-landfalls$COUNTRY <- landfall_countries$name_long
+landfalls$COUNTRY <- landfall_countries$sovereignt
+landfalls$LOCATION <- landfall_countries$name_long
 
 #-------------------------------------------------------------------------------
 # landfall is defined as the center of the system crossing a coastline 
@@ -46,7 +47,8 @@ landfalls$COUNTRY <- landfall_countries$name_long
 
 missing_idx <- which(is.na(landfalls$COUNTRY))
 nearest_countries_idx <- st_nearest_feature(landfalls_sf[missing_idx, ], countries)
-landfalls$COUNTRY[missing_idx] <- countries$name_long[nearest_countries_idx]
+landfalls$COUNTRY[missing_idx] <- countries$sovereignt[nearest_countries_idx]
+landfalls$LOCATION[missing_idx] <- countries$name_long[nearest_countries_idx]
 
 #===============================================================================
 # save data set as a .csv to facilitate readability and to 
