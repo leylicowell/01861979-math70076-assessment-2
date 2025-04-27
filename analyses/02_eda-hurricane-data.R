@@ -13,7 +13,6 @@ library(data.table)
 library(scales)
 library(sf)
 library(rnaturalearth)
-library(ggrepel)
 
 
 #==============================================================================
@@ -226,7 +225,7 @@ p5 <- ggplot(data = landfalls_per_location) +
   geom_sf(aes(fill = LANDFALL_NUM), color = "black", linewidth = 0.125) +
   coord_sf(xlim = c(-180, -10), ylim = c(-5, 85), expand = FALSE) +
   scale_fill_gradientn(
-    colors = c("#fcf9cb", "#fef67e","#fe8901", "#ff6232", "#bd1d12"),  # Light red to dark red
+    colors = c("#fcf9cb", "#fef67e","#f07028", "#ff6232", "#bd1d12"),  # Light red to dark red
     values = rescale(c(0, 1, 20, 50, 150))) +
   theme_minimal() +
   labs(fill = "Number of Landfalls") +
@@ -250,8 +249,10 @@ p5 <- ggplot(data = landfalls_per_location) +
                  top_ten_landfall_locations$name_long == "Bahamas" ~ -1,
                  .default = 0)) +
   theme(
-    axis.text = element_blank(),  # Remove axis text (numbers)
-    axis.title = element_blank()  # Remove axis titles
+    axis.text = element_blank(),  
+    axis.title = element_blank(),  
+    panel.background = element_rect(fill = "#bde5ff"),
+    panel.grid = element_blank()
   )
 
 
@@ -263,5 +264,10 @@ ggsave(here("outputs", "eda-hurricane-data", "landfall-countries.pdf"),
        height = 10, 
        width = 10, 
        dpi=600)
+
+landfalls_per_location <- landfall_data %>%
+  filter(LOCATION %in% top_ten_landfall_locations$name_long) %>%
+  group_by(LOCATION, YEAR) %>%
+  summarise(LANDFALL_NUM = n(), .groups = "drop")
 
 
