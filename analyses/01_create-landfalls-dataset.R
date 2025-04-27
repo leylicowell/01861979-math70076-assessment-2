@@ -1,4 +1,9 @@
-# in this script, we 
+# in this script, we create a new data set of landfalls as well as the countries
+# where the landfalls occur
+
+#===============================================================================
+# load packages
+#===============================================================================
 
 library(dplyr)
 library(magrittr)
@@ -9,15 +14,15 @@ library(data.table)
 library(rnaturalearth)
 library(sf)
 
-#==============================================================================
+#===============================================================================
 # we load our data set
-#==============================================================================
+#===============================================================================
 
 hurricane_data <- read.csv(here("data", "derived", "hurricane-data.csv"))
 
-#==============================================================================
+#===============================================================================
 # we add countries to our landfall data
-#==============================================================================
+#===============================================================================
 
 landfalls <- hurricane_data %>%
   filter(RECORD_ID == "L")
@@ -42,9 +47,10 @@ missing_idx <- which(is.na(landfalls$COUNTRY))
 nearest_countries_idx <- st_nearest_feature(landfalls_sf[missing_idx, ], countries)
 landfalls$COUNTRY[missing_idx] <- countries$name_long[nearest_countries_idx]
 
-#==============================================================================
-# save data set
-#==============================================================================
+#===============================================================================
+# save data set as a .csv to facilitate readability and to 
+# facilitate using this data set on different platforms/with different software
+#===============================================================================
 
 write.csv(landfalls, 
           file = file.path(here("data", "derived"), "landfall-data.csv"), 

@@ -18,13 +18,13 @@ library(scales)
 #==============================================================================
 
 hurricane_data <- read.csv(here("data", "derived", "hurricane-data.csv"))
+landfall_data <- read.csv(here("data", "derived", "landfall-data.csv"))
 
 #==============================================================================
 # we want to plot the number of landfalls per year from 1900-2024 
 #==============================================================================
 
-landfalls_per_year <- hurricane_data %>%
-  filter(RECORD_ID == "L") %>%
+landfalls_per_year <- landfall_data %>%
   group_by(YEAR) %>%
   summarise(CYCLONE_NUM = n(), .groups = "drop")
 
@@ -51,8 +51,7 @@ ggsave(here("outputs", "eda-hurricane-data", "landfalls-per-year.pdf"),
 #==============================================================================
 
 # calculate average number of cyclone landfalls per month (across 2000-2024)
-landfalls_per_month_and_year <- hurricane_data %>%
-  filter(RECORD_ID == "L") %>%
+landfalls_per_month_and_year <- landfall_data %>%
   group_by(YEAR, MONTH) %>%
   summarise(LANDFALL_NUM = n(), .groups = "drop")
 
@@ -124,6 +123,7 @@ p3 <- ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = 
   theme_minimal()
 
 p3
+
 # save output
 ggsave(here("outputs","eda-hurricane-data", "nbr-cyclone-landfalls.pdf"), 
        plot = p3, 
@@ -140,8 +140,7 @@ world <- map_data("world")
 
 
 # we now select all the hurricanes that landfall at least once
-landfall_hurricanes <- hurricane_data %>%
-  filter(RECORD_ID == "L") %>%
+landfall_hurricanes <- landfall_data %>%
   distinct(STORM_ID)
 
 landfall_data <- hurricane_data %>%
