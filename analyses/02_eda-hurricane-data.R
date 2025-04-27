@@ -11,6 +11,9 @@ library(ggplot2)
 library(stringr)
 library(data.table)
 library(scales)
+library(sf)
+library(rnaturalearth)
+library(ggrepel)
 
 
 #==============================================================================
@@ -31,8 +34,7 @@ landfalls_per_year <- landfall_data %>%
 # Plot
 p1 <- ggplot(landfalls_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
   geom_col(fill = "steelblue") +
-  labs(title = "Number of Cyclone Landfalls Per Year",
-       x = "Year",
+  labs(x = "Year",
        y = "Number of Landfalls") +
   theme_minimal()
 
@@ -77,8 +79,7 @@ avg_landfalls_per_month <- landfalls_per_month_and_year %>%
 p2 <- ggplot(avg_landfalls_per_month, aes(x = factor(MONTH, levels = month.name), 
                                          y = AVG_LANDFALLS)) +
   geom_col(fill = "steelblue") +
-  labs(title = "Average Number of Landfalls Per Month, averaging across 2000-2024",
-       x = "Month",
+  labs(x = "Month",
        y = "Average Number of Landfalls") +
   theme_minimal() + 
   theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1))
@@ -117,8 +118,7 @@ landfall_summary <- landfall_statistics %>%
 # plot results
 p3 <- ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = NUM)) +
   geom_col(fill = "steelblue") +
-  labs(title = "Number of Landfalling Cyclones by Landfall Frequency, 2000-2024",
-       x = "Number of Landfalls per Cyclone",
+  labs(x = "Number of Landfalls per Cyclone",
        y = "Number of Cyclones") +
   theme_minimal()
 
@@ -143,11 +143,11 @@ world <- map_data("world")
 landfall_hurricanes <- landfall_data %>%
   distinct(STORM_ID)
 
-landfall_data <- hurricane_data %>%
+landfall_cyclones <- hurricane_data %>%
   filter(STORM_ID %in% landfall_hurricanes$STORM_ID)
 
 
-landfall_data <- landfall_data %>%
+landfall_cyclones <- landfall_cyclones %>%
   mutate(TIME = sprintf("%04s", as.integer(TIME)),
     DATE_TIME = as.POSIXct(paste(YEAR, 
                                  MONTH, 
@@ -167,7 +167,7 @@ p4 <- ggplot() +
   theme(panel.background = element_rect(fill = "#3f7ec0", color = NA),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   
-  geom_path(data = landfall_data, aes(x = LON, 
+  geom_path(data = landfall_cyclones, aes(x = LON, 
                                       y = LAT, 
                                       group = STORM_ID, 
                                       color = WIND), 
@@ -176,19 +176,92 @@ p4 <- ggplot() +
                         values = rescale(c(0, 33, 63, 82, 95, 112, 137)),
                         limits = c(0, 137)) + 
   coord_cartesian( xlim = c(-175, 40), ylim = c(0, 70)) + 
-  labs(title = "Landfall Hurricane Tracks with Wind Speed, 2000-2024",
-       x = "Longitude", 
+  labs(x = "Longitude", 
        y = "Latitude", 
        color = "Wind Speed (knots)") +
   theme(legend.position = "right")
 
 p4
 
+# save output
 ggsave(here("outputs", "eda-hurricane-data", "landfall-map.pdf"), 
        plot =p4,
        height = 4, 
        width = 10, 
        dpi=600)
 
+
+#==============================================================================
+# we now want to examine which countries have had the most landfalls since 2000
+#==============================================================================
+
+# we count the number of landfalls per country
+landfalls_per_location <- landfall_data %>%
+  group_by(LOCATION) %>%
+  summarise(LANDFALL_NUM = n(), .groups = "drop")
+
+# add landfall count to countries sf object for plotting to get geometry of 
+# landfall locations
+countries <- ne_countries(scale = 'medium', 
+                          returnclass = c("sf"), 
+                          continent = c("North America", "South America"))
+
+
+landfalls_per_location <- countries[, c("name_long", "geometry")] %>%
+  left_join(landfalls_per_location, 
+            by = c("name_long" = "LOCATION")) 
+
+# replace NA rows with 0
+landfalls_per_location <- landfalls_per_location %>%
+  mutate(LANDFALL_NUM = ifelse(is.na(LANDFALL_NUM), 0, LANDFALL_NUM))
+
+# find 10 countries with the most landfalls and save these in a dataset
+top_ten_landfall_locations <- landfalls_per_location %>%
+  arrange(desc(LANDFALL_NUM))
+
+top_ten_landfall_locations <- top_ten_landfall_locations[1:10,]
+
+# plot map of countries most at risk
+p5 <- ggplot(data = landfalls_per_location) +
+  geom_sf(aes(fill = LANDFALL_NUM), color = "black", linewidth = 0.125) +
+  coord_sf(xlim = c(-180, -10), ylim = c(-5, 85), expand = FALSE) +
+  scale_fill_gradientn(
+    colors = c("#fcf9cb", "#fef67e","#fe8901", "#ff6232", "#bd1d12"),  # Light red to dark red
+    values = rescale(c(0, 1, 20, 50, 150))) +
+  theme_minimal() +
+  labs(fill = "Number of Landfalls") +
+  geom_sf_text(data = top_ten_landfall_locations, 
+               aes(label = name_long), 
+               size = 2.5, 
+               fontface = "bold", 
+               color = "black",
+               nudge_x = case_when(
+                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 8, 
+                 top_ten_landfall_locations$name_long == "Belize" ~ 3,  
+                 top_ten_landfall_locations$name_long == "Cuba" ~ 2.5, 
+                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 5.2,
+                 top_ten_landfall_locations$name_long == "Bahamas" ~ 7,
+                 top_ten_landfall_locations$name_long == "Antigua and Barbuda" ~ 9,
+                 .default = 0), 
+               nudge_y = case_when(
+                 top_ten_landfall_locations$name_long == "Cuba" ~ 0.75,
+                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 0.85,
+                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 1.75,  
+                 top_ten_landfall_locations$name_long == "Bahamas" ~ -1,
+                 .default = 0)) +
+  theme(
+    axis.text = element_blank(),  # Remove axis text (numbers)
+    axis.title = element_blank()  # Remove axis titles
+  )
+
+
+p5
+
+# save output
+ggsave(here("outputs", "eda-hurricane-data", "landfall-countries.pdf"), 
+       plot =p5,
+       height = 10, 
+       width = 10, 
+       dpi=600)
 
 
