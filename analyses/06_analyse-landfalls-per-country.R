@@ -23,10 +23,4 @@ bayesplot::color_scheme_set("brewer-RdYlBu")
 # we load our data set
 #==============================================================================
 
-hurricane_data <- read.csv(here("data", "derived", "hurricane-data.csv"))
-
-landfalls <- hurricane_data %>%
-  filter(RECORD_ID == "L")
-
-head(hurricane_data)
-tail(hurricane_data)
+landfall_data <- read.csv(here("data", "derived", "landfall-data.csv"))
