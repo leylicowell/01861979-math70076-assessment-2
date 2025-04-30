@@ -3,19 +3,25 @@
 # we use a Bayesian Poisson regression model for the top 10 countries with the most
 # landfalls since 2000
 
-library(data.table)  # for data mangling
-library(ggplot2)  # for plotting
-library(ggsci)  # for plotting colors
-library(hexbin)  # for plotting pair plots
-library(bayesplot)  # for plotting Stan outputs
-library(kableExtra)  # for tables
-library(cmdstanr)  # for Stan
-library(webshot2) # for saving kbl tables
+#==============================================================================
+# load packages and functions
+#==============================================================================
+
+library(data.table) 
+library(ggplot2)  
+library(ggsci)  
+library(hexbin)  
+library(bayesplot) 
+library(kableExtra)  
+library(cmdstanr) 
+library(webshot2) 
 library(here)
 library(dplyr)
 library(magrittr)
 library(tidyr)
 
+source(here("src", "check-model-diagnostics.R"))
+source(here("src", "check-posterior-predictions.R"))
 
 # set colour scheme for Stan
 bayesplot::color_scheme_set("brewer-RdYlBu")
@@ -117,7 +123,7 @@ landfall_freq <- merge(landfall_freq,
                        subset(top_ten_landfall_locations, select = c(LOCATION, LOC_ID)), 
                               by = 'LOCATION')
 
-# now make one hot design matrix for predictors
+# now we make one hot design matrix for predictors
 predictors <- data.table::dcast(landfall_freq, 
                                 OBS_ID ~ LOC_ID, 
                                 value.var = 'LANDFALL_NBR', 
@@ -138,7 +144,7 @@ logpoi_country_model_filename <- cmdstanr::write_stan_file(
 # compile Stan model
 logpoi_country_model_compiled <- cmdstanr::cmdstan_model(logpoi_country_model_filename)
 
-# define our maps from 1 to 60 race & ethnicity and years
+# define our Stan data
 stan_data <- list()
 stan_data$N <- nrow(landfall_freq)
 stan_data$P <- 10
@@ -163,175 +169,53 @@ logpoi_country_model_fit <- logpoi_country_model_compiled$sample(
   save_warmup = TRUE)
 
 # save output to RDS
-logpoi_country_model_fit$save_object(file = file.path(here("outputs", 
-                                                                  "stan-models", 
-                                                                  "country-model-cmdstanr.rds")))
+logpoi_country_model_fit$save_object(file = file.path(here("outputs",
+                                                           "stan-models", 
+                                                           "country-model-cmdstanr.rds")))
 
 
 #-------------------------------------------------------------------------------
-# check mixing and convergence
+# check mixing and convergence of model parameters
 #-------------------------------------------------------------------------------
 
-model_summary <- logpoi_country_model_fit$summary(
-  variables = c("beta_0", "beta", "beta_sd"),
-  posterior::default_summary_measures(),
-  posterior::default_convergence_measures(),
-  extra_quantiles = ~posterior::quantile2(., probs = c(.0275, .975)))
+# prints table of all parameter convergence diagnostics, a trace plot of worst 
+# performing parameter and pairwise plot of 4 worst performing parameters, then
+# saves table of 5 worst parameters (in terms of their convergence diagnostics)
+model_diagnostics <- check_model_diagnostics(logpoi_country_model_fit,
+                                       c("beta_0", "beta", "beta_sd"))
 
-# sort by smallest ess_bulk
-model_summary  <- as.data.table(model_summary )
-model_summary  <- model_summary[order(ess_bulk),]
+model_diagnostics
 
-# plot table
-kbl(model_summary, caption = 'Model diagnostics', longtable = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                font_size = 12) 
-
-# table of 5 worst performing parameters
-t1 <- kbl(subset(model_summary[1:5,], 
-                 select = c(variable, rhat, ess_bulk, ess_tail)),
-          caption = 'Model diagnostics for 5 worst performing parameters', 
-          longtable = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                font_size = 12) 
-
-t1
-
-
-save_kable(t1, file = here("outputs", 
-                           "bayesian-analysis-landfall-freq",
-                           "no-year-effect-model", 
-                           "no-year-model-diagnostics.html"))
+save_kable(model_diagnostics, file = here("outputs", 
+                           "bayesian-analysis-country-freq",
+                           "country-model-diagnostics.html"))
 
 # use webshot to capture the html table as a pdf
-webshot(here("outputs",
-             "bayesian-analysis-landfall-freq",
-             "no-year-effect-model",  
-             "no-year-model-diagnostics.html"), 
+webshot(here("outputs", 
+             "bayesian-analysis-country-freq",
+             "country-model-diagnostics.html"), 
         here("outputs", 
-             "bayesian-analysis-landfall-freq",
-             "no-year-effect-model", 
-             "no-year-model-diagnostics.pdf"))
-
-
-
-# plot traces of parameter with smallest ess_bulk
-# extract samples
-model_draws <- logpoi_country_model_fit$draws(
-  variables = c('lp__',
-                "beta_0", 
-                "beta", 
-                "beta_sd"),
-  inc_warmup = TRUE, format = "draws_array")
-
-# make trace plots of worst performing parameter
-model1_worst_var <- model_summary$variable[ which.min(model_summary$ess_bulk)]
-
-bayesplot:::mcmc_trace(model_draws,  
-                       pars = model1_worst_var, 
-                       n_warmup = 500, 
-                       facet_args = list(nrow = 1))+ 
-  theme_bw() + 
-  coord_cartesian(ylim = c(0, 4))
-
-#-------------------------------------------------------------------------------
-# pairwise posterior geometry of 4 worst performing parameters
-#-------------------------------------------------------------------------------
-
-worst_param <- model_summary[1:4,]$variable
-model_draws <- logpoi_country_model_fit$draws(
-  variables = worst_param,inc_warmup = FALSE,
-  format = "draws_array")
-
-bayesplot::color_scheme_set('viridisC')
-bayesplot::mcmc_pairs(model_draws, 
-                      pars = worst_param, 
-                      diag_fun = "dens", 
-                      off_diag_fun = "hex") 
-
+             "bayesian-analysis-country-freq",
+             "country-model-diagnostics.pdf"))
 
 #-------------------------------------------------------------------------------
 # posterior predictive checks
 #-------------------------------------------------------------------------------
 
-# extract Monte Carlo samples of log_lambda vector
-model <- list()
-model$log_lambda <- logpoi_country_model_fit$draws(variables = "log_lambda", 
-                                                          inc_warmup = FALSE,
-                                                          format = "draws_df")
+# plot posterior predictive check for each location and each year
+post_checks <-  check_posterior_predictions(logpoi_country_model_fit, 
+                                   'log_lambda', 
+                                   landfall_freq,
+                                   'OBS_ID', 
+                                   "LANDFALL_NBR", 
+                                   'LOCATION', 
+                                   'YEAR')
+post_checks
 
-# MELT log_lambda into long format, and link to all_id in the data
-model$log_lambda <- data.table::melt(as.data.table(model$log_lambda), 
-                                     id.vars = c('.chain','.iteration','.draw'))
-set(model$log_lambda, 
-    NULL, 
-    'ALL_ID', 
-    gsub('log_lambda\\[([0-9]+)\\]','\\1',as.character(model$log_lambda$variable)))
-set(model$log_lambda, NULL, 'ALL_ID', as.integer(model$log_lambda$ALL_ID))
-setnames(model$log_lambda, c('value'), c('log_lambda'))
-set(model$log_lambda, NULL, 'variable', NULL)
-logpoi_no_year_effect_model_lambda <- model$log_lambda
-
-# clean up so we don't have millions of data points stored multiple times
-model <- NULL
-gc()
-
-# make posterior predictions, conditional on the joint posterior for log_lambda
-set.seed(42L)
-logpoi_no_year_effect_model_lambda[ , post_pred := rpois( nrow(logpoi_no_year_effect_model_lambda), 
-                                                          exp(log_lambda))]
-
-# create median and 95\% credible intervals for variables 
-logpoi_no_year_effect_model_summary <- logpoi_no_year_effect_model_lambda[,list(
-  summary_value = quantile(post_pred, prob = c(0.025, 0.25, 0.5, 0.75, 0.975)),
-  summary_name = c('q_lower','iqr_lower', 'median','iqr_upper', 'q_upper')),
-  by = 'ALL_ID']
-
-logpoi_no_year_effect_model_summary<- data.table::dcast(logpoi_no_year_effect_model_summary,
-                                                        ALL_ID ~ summary_name, 
-                                                        value.var = 'summary_value')
-
-month_effects <- subset(landfalls[1:300], 
-                        select = c('MONTH', 'LANDFALL_COUNT', 'YEAR', 'ALL_ID'))
-
-model_summary <- merge(month_effects,logpoi_no_year_effect_model_summary, by = 'ALL_ID')
-
-
-# make posterior predictive check
-model_summary[, IN_PPI := LANDFALL_COUNT >= q_lower & LANDFALL_COUNT <= q_upper]
-cat(round(model_summary[, mean( as.numeric( IN_PPI ) )]*100, 1),
-    "% of all 300 observed values are within our model's 95% posterior predictive intervals.")
-
-# reorder months in chronological order
-model_summary$MONTH <- factor(model_summary$MONTH, 
-                              levels = month.name)  
-
-# plot posterior predictive check for each year and each race & ethnicity
-p1 <- ggplot(model_summary, aes(x = as.factor(YEAR))) + 
-  geom_boxplot( aes( group = YEAR, 
-                     ymin = q_lower, 
-                     lower = iqr_lower,
-                     middle = median, 
-                     upper = iqr_upper, 
-                     ymax = q_upper), 
-                stat = 'identity') +
-  geom_point( aes(y = LANDFALL_COUNT, colour = IN_PPI ) ) +
-  scale_y_continuous() + 
-  ggsci::scale_color_npg() +
-  labs(x = 'Year', 
-       y = 'Number of landfalls', 
-       colour = 'within\n95% posterior\nprediction\ninterval') +
-  facet_grid(MONTH ~ ., labeller = label_wrap_gen(20)) + 
-  theme_bw()
-
-p1 
-
-p1 <- ggsave(here("outputs", 
-                  "bayesian-analysis-landfall-freq",
-                  "no-year-effect-model", 
-                  "no-year-post-pred-checks.pdf"), 
-             plot = p1, 
+post_checks <- ggsave(here("outputs", 
+                  "bayesian-analysis-country-freq",
+                  "country-post-pred-checks.pdf"), 
+             plot = post_checks, 
              height = 10, 
              width = 10, 
              dpi=300)
-

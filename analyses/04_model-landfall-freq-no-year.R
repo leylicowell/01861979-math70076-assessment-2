@@ -2,6 +2,10 @@
 # small yearly changes so in this script we design a simpler model, investigating
 # monthly effects only, from count data stratified by month and year
 
+#==============================================================================
+# load packages and functions
+#==============================================================================
+
 library(data.table)  # for data mangling
 library(ggplot2)  # for plotting
 library(ggsci)  # for plotting colors
@@ -15,6 +19,8 @@ library(dplyr)
 library(magrittr)
 library(tidyr)
 
+source(here("src", "check-model-diagnostics.R"))
+source(here("src", "check-posterior-predictions.R"))
 
 # set colour scheme for Stan
 bayesplot::color_scheme_set("brewer-RdYlBu")
@@ -23,7 +29,9 @@ bayesplot::color_scheme_set("brewer-RdYlBu")
 # we load our data set
 #==============================================================================
 
-landfalls <- as.data.table(read.csv(here("data", "derived", "stan-landfall-freq-data.csv")))
+landfalls <- as.data.table(read.csv(here("data", 
+                                         "derived", 
+                                         "stan-landfall-freq-data.csv")))
 
 #==============================================================================
 # Run poisson regression model without year effect on data stratified by
@@ -137,174 +145,58 @@ logpoi_no_year_effect_model_fit <- logpoi_no_year_effect_model_compiled$sample(
   save_warmup = TRUE)
 
 # save output to RDS
-logpoi_no_year_effect_model_fit$save_object(file = file.path(here("outputs", 
-                                                                  "stan-models", 
-                                                                  "no-year-effect-model-cmdstanr.rds")))
+logpoi_no_year_effect_model_fit$save_object(file = file.path(
+  here("outputs", 
+       "stan-models", 
+       "no-year-effect-model-cmdstanr.rds")))
 
 
 #-------------------------------------------------------------------------------
 # check mixing and convergence
 #-------------------------------------------------------------------------------
 
-model_summary <- logpoi_no_year_effect_model_fit$summary(
-  variables = c("beta_0", "beta", "beta_sd"),
-  posterior::default_summary_measures(),
-  posterior::default_convergence_measures(),
-  extra_quantiles = ~posterior::quantile2(., probs = c(.0275, .975)))
+# prints table of all parameter convergence diagnostics, a trace plot of worst 
+# performing parameter and pairwise plot of 4 worst performing parameters, then
+# saves table of 5 worst parameters (in terms of their convergence diagnostics)
+model_diagnostics <- check_model_diagnostics(logpoi_no_year_effect_model_fit,
+                                             c("beta_0", "beta", "beta_sd"))
 
-# sort by smallest ess_bulk
-model_summary  <- as.data.table(model_summary )
-model_summary  <- model_summary[order(ess_bulk),]
+model_diagnostics
 
-# plot table
-kbl(model_summary, caption = 'Model diagnostics', longtable = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                font_size = 12) 
-
-# table of 5 worst performing parameters
-t1 <- kbl(subset(model_summary[1:5,], 
-                 select = c(variable, rhat, ess_bulk, ess_tail)),
-          caption = 'Model diagnostics for 5 worst performing parameters', 
-          longtable = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                font_size = 12) 
-
-t1
-
-
-save_kable(t1, file = here("outputs", 
+save_kable(model_diagnostics, file = here("outputs", 
                            "bayesian-analysis-landfall-freq",
-                           "no-year-effect-model", 
+                           "model-no-year-effect", 
                            "no-year-model-diagnostics.html"))
 
 # use webshot to capture the html table as a pdf
 webshot(here("outputs",
              "bayesian-analysis-landfall-freq",
-             "no-year-effect-model",  
+             "model-no-year-effect",  
              "no-year-model-diagnostics.html"), 
         here("outputs", 
              "bayesian-analysis-landfall-freq",
-             "no-year-effect-model", 
+             "model-no-year-effect", 
              "no-year-model-diagnostics.pdf"))
-
-
-
-# plot traces of parameter with smallest ess_bulk
-# extract samples
-model_draws <- logpoi_no_year_effect_model_fit$draws(
-  variables = c('lp__',
-                "beta_0", 
-                "beta", 
-                "beta_sd"),
-  inc_warmup = TRUE, format = "draws_array")
-
-# make trace plots of worst performing parameter
-model1_worst_var <- model_summary$variable[ which.min(model_summary$ess_bulk)]
-
-bayesplot:::mcmc_trace(model_draws,  
-                       pars = model1_worst_var, 
-                       n_warmup = 500, 
-                       facet_args = list(nrow = 1))+ 
-  theme_bw() + 
-  coord_cartesian(ylim = c(-0.5, 10))
-
-#-------------------------------------------------------------------------------
-# pairwise posterior geometry of 4 worst performing parameters
-#-------------------------------------------------------------------------------
-
-worst_param <- model_summary[1:4,]$variable
-model_draws <- logpoi_no_year_effect_model_fit$draws(
-  variables = worst_param,inc_warmup = FALSE,
-  format = "draws_array")
-
-bayesplot::color_scheme_set('viridisC')
-bayesplot::mcmc_pairs(model_draws, 
-                      pars = worst_param, 
-                      diag_fun = "dens", 
-                      off_diag_fun = "hex") 
-
 
 #-------------------------------------------------------------------------------
 # posterior predictive checks
 #-------------------------------------------------------------------------------
 
-# extract Monte Carlo samples of log_lambda vector
-model <- list()
-model$log_lambda <- logpoi_no_year_effect_model_fit$draws(variables = "log_lambda", 
-                                                          inc_warmup = FALSE,
-                                                          format = "draws_df")
+post_checks <- check_posterior_predictions(logpoi_no_year_effect_model_fit, 
+                                           'log_lambda', 
+                                           landfalls[1:300],
+                                           "ALL_ID",
+                                           "LANDFALL_COUNT", 
+                                           'MONTH', 
+                                           'YEAR')
 
-# MELT log_lambda into long format, and link to all_id in the data
-model$log_lambda <- data.table::melt(as.data.table(model$log_lambda), 
-                                     id.vars = c('.chain','.iteration','.draw'))
-set(model$log_lambda, 
-    NULL, 
-    'ALL_ID', 
-    gsub('log_lambda\\[([0-9]+)\\]','\\1',as.character(model$log_lambda$variable)))
-set(model$log_lambda, NULL, 'ALL_ID', as.integer(model$log_lambda$ALL_ID))
-setnames(model$log_lambda, c('value'), c('log_lambda'))
-set(model$log_lambda, NULL, 'variable', NULL)
-logpoi_no_year_effect_model_lambda <- model$log_lambda
+post_checks
 
-# clean up so we don't have millions of data points stored multiple times
-model <- NULL
-gc()
-
-# make posterior predictions, conditional on the joint posterior for log_lambda
-set.seed(42L)
-logpoi_no_year_effect_model_lambda[ , post_pred := rpois( nrow(logpoi_no_year_effect_model_lambda), 
-                                                          exp(log_lambda))]
-
-# create median and 95\% credible intervals for variables 
-logpoi_no_year_effect_model_summary <- logpoi_no_year_effect_model_lambda[,list(
-  summary_value = quantile(post_pred, prob = c(0.025, 0.25, 0.5, 0.75, 0.975)),
-  summary_name = c('q_lower','iqr_lower', 'median','iqr_upper', 'q_upper')),
-  by = 'ALL_ID']
-
-logpoi_no_year_effect_model_summary<- data.table::dcast(logpoi_no_year_effect_model_summary,
-                                                        ALL_ID ~ summary_name, 
-                                                        value.var = 'summary_value')
-
-month_effects <- subset(landfalls[1:300], 
-                        select = c('MONTH', 'LANDFALL_COUNT', 'YEAR', 'ALL_ID'))
-
-model_summary <- merge(month_effects,logpoi_no_year_effect_model_summary, by = 'ALL_ID')
-
-
-# make posterior predictive check
-model_summary[, IN_PPI := LANDFALL_COUNT >= q_lower & LANDFALL_COUNT <= q_upper]
-cat(round(model_summary[, mean( as.numeric( IN_PPI ) )]*100, 1),
-    "% of all 300 observed values are within our model's 95% posterior predictive intervals.")
-
-# reorder months in chronological order
-model_summary$MONTH <- factor(model_summary$MONTH, 
-                              levels = month.name)  
-
-# plot posterior predictive check for each year and each race & ethnicity
-p1 <- ggplot(model_summary, aes(x = as.factor(YEAR))) + 
-  geom_boxplot( aes( group = YEAR, 
-                     ymin = q_lower, 
-                     lower = iqr_lower,
-                     middle = median, 
-                     upper = iqr_upper, 
-                     ymax = q_upper), 
-                stat = 'identity') +
-  geom_point( aes(y = LANDFALL_COUNT, colour = IN_PPI ) ) +
-  scale_y_continuous() + 
-  ggsci::scale_color_npg() +
-  labs(x = 'Year', 
-       y = 'Number of landfalls', 
-       colour = 'within\n95% posterior\nprediction\ninterval') +
-  facet_grid(MONTH ~ ., labeller = label_wrap_gen(20)) + 
-  theme_bw()
-
-p1 
-
-p1 <- ggsave(here("outputs", 
+post_checks <- ggsave(here("outputs", 
                   "bayesian-analysis-landfall-freq",
-                  "no-year-effect-model", 
+                  "model-no-year-effect", 
                   "no-year-post-pred-checks.pdf"), 
-             plot = p1, 
+             plot = post_checks, 
              height = 10, 
              width = 10, 
              dpi=300)

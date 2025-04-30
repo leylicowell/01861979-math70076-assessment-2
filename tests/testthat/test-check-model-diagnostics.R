@@ -1,3 +1,7 @@
+library(cmdstanr)
+library(data.table)
+library(kableExtra)
+
 # check_model_diagnostics example
 # should print trace plot without warmup and no pairs plot
 cmdstanr::cmdstanr_example("logistic")

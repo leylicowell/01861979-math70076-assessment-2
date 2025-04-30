@@ -1,6 +1,6 @@
 #' Check model convergence diagnostics for Stan models
 #'
-#' @param model CmdStanMCMC fitted Stan model object
+#' @param model_fit CmdStanMCMC fitted Stan model object
 #' @param var variables/parameters from our Stan model
 #' @param warmup TRUE if warmup was included in stan model or FALSE otherwise
 #' @param warmup_nbr number of iterations in model which were part of the warmup
@@ -9,8 +9,7 @@
 #' 
 #' @import cmdstanr
 #' @importFrom data.table as.data.table
-#' @importFrom knitr kbl
-#' @importFrom kableExtra kable_styling
+#' @importFrom kableExtra kable_styling, kbl
 #' @import ggplot2
 #' @export 
 #'
