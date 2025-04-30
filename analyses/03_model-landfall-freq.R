@@ -96,7 +96,6 @@ logpoi_hsgp_model_text <- "
   }
   parameters{
     // intercept and noise std
-    real beta_0;
     real<lower=0> beta_sd;
     vector[M-1] beta_s2z_m1_rnde;
     real<lower=0> gp_lengthscale;
@@ -120,14 +119,13 @@ logpoi_hsgp_model_text <- "
     f = hsgp_PHI * (hsgp_sqrt_spd .* z);
     // linear predictor with offset
     for (i in 1:N){
-      log_lambda[i] = beta_0 + beta[month_id[i]] + f[i];
+      log_lambda[i] = beta[month_id[i]] + f[i];
     }
   }
   model{ 
     // likelihood
     y ~ poisson_log( log_lambda );
     // priors
-    beta_0 ~ normal( 0 , 2 );
     beta_s2z_m1_rnde ~ normal( 0, s2z_sd_b );
     beta_sd ~ cauchy(0,1);
     // priors for GP
@@ -141,7 +139,7 @@ logpoi_hsgp_model_text <- "
     array [N] real log_lik;
   
     for(i in 1:N){
-      log_lik[i] = poisson_log_lpmf(y[i] | beta_0 + beta[month_id[i]]);
+      log_lik[i] = poisson_log_lpmf(y[i] | beta[month_id[i]]);
     }
     
     vector[N_star] hsgp_pred;{
@@ -149,7 +147,7 @@ logpoi_hsgp_model_text <- "
       hsgp_pred = hsgp_PHI_star * (hsgp_sqrt_spd .* z);
       
       for (i in 1:N_star){
-        log_lambda_star[i] = beta_0 + beta[month_id_star[i]] + hsgp_pred[i];}
+        log_lambda_star[i] = beta[month_id_star[i]] + hsgp_pred[i];}
       // predict
       y_all_pred = poisson_log_rng( append_row(log_lambda, log_lambda_star));
     }
@@ -258,8 +256,7 @@ logpoi_hsgp_model_fit$save_object(file = file.path(here("outputs",
 # performing parameter and pairwise plot of 4 worst performing parameters, then
 # saves table of 5 worst parameters (in terms of their convergence diagnostics)
 model_diagnostics <- check_model_diagnostics(logpoi_hsgp_model_fit,
-                                             c("beta_0", 
-                                               "beta", 
+                                             c("beta", 
                                                "beta_sd",
                                                "z",
                                                "gp_lengthscale", 

@@ -69,7 +69,6 @@ transformed data{
   matrix[M, M-1] s2z_Q_b = sum2zero_generating_matrix(M);
 }
 parameters{
-  real beta_0;
   real<lower=0> beta_sd;
   vector[M-1] beta_s2z_m1_rnde;
 }
@@ -79,7 +78,7 @@ transformed parameters{
   vector[N] log_lambda;
   
   for (i in 1:N){
-    log_lambda[i] = beta_0 + beta[month_id[i]];
+    log_lambda[i] = beta[month_id[i]];
   }
 }
 model{
@@ -87,7 +86,6 @@ model{
   y ~ poisson_log(log_lambda);
   
   // priors
-  beta_0 ~ normal(0, 2);
   beta_s2z_m1_rnde ~ normal(0, s2z_sd_b);
   beta_sd ~ cauchy(0, 1);
 }
@@ -98,11 +96,11 @@ generated quantities{
   
   for(i in 1:N)
   {
-    log_lik[i] = poisson_log_lpmf(y[i] | beta_0 + beta[month_id[i]]);
+    log_lik[i] = poisson_log_lpmf(y[i] | beta[month_id[i]]);
   }
   
   for (i in 1:N_star){
-    log_lambda_star[i] = beta_0 + beta[month_id_star[i]];
+    log_lambda_star[i] = beta[month_id_star[i]];
   }
   y_all_pred = poisson_log_rng(append_row(log_lambda, log_lambda_star));
 }
@@ -159,7 +157,7 @@ logpoi_no_year_effect_model_fit$save_object(file = file.path(
 # performing parameter and pairwise plot of 4 worst performing parameters, then
 # saves table of 5 worst parameters (in terms of their convergence diagnostics)
 model_diagnostics <- check_model_diagnostics(logpoi_no_year_effect_model_fit,
-                                             c("beta_0", "beta", "beta_sd"))
+                                             c("beta", "beta_sd"))
 
 model_diagnostics
 

@@ -14,18 +14,21 @@ library(dplyr)
 library(magrittr)
 library(tidyr)
 
-#-------------------------------------------------------------------------------
+#===============================================================================
 # load model fits and data
-#-------------------------------------------------------------------------------
+#===============================================================================
 
 logpoi_hsgp_model_fit <- readRDS(file = file.path(here("outputs", 
                                                        "stan-models", 
                                                        "hsgp-model-cmdstanr.rds")))
+
 logpoi_no_year_effect_model_fit <- readRDS(file = file.path(here("outputs", 
                                                           "stan-models", 
                                                           "no-year-effect-model-cmdstanr.rds")))
 
-landfalls <- as.data.table(read.csv(here("data", "derived", "stan-landfall-freq-data.csv")))
+landfalls <- as.data.table(read.csv(here("data", 
+                                         "derived", 
+                                         "stan-landfall-freq-data.csv")))
 
 #-------------------------------------------------------------------------------
 # compare prediction accuracy of both models
@@ -51,9 +54,10 @@ print(comp, simplify = FALSE)
 #-------------------------------------------------------------------------------
 
 model <- list()
-model$log_lambda_star <- logpoi_no_year_effect_model_fit$draws(variables = "log_lambda_star", 
-                                                     inc_warmup = FALSE, 
-                                                     format = "draws_df")
+model$log_lambda_star <- logpoi_no_year_effect_model_fit$draws(
+  variables = "log_lambda_star", 
+  inc_warmup = FALSE, 
+  format = "draws_df")
 
 # MELT log_lambda_star into long format, and link to pred_idx in the data
 model$log_lambda_star <- data.table::melt(as.data.table(model$log_lambda_star), 
@@ -61,7 +65,9 @@ model$log_lambda_star <- data.table::melt(as.data.table(model$log_lambda_star),
 set(model$log_lambda_star, 
     NULL, 
     'PRED_ID',
-    gsub('log_lambda_star\\[([0-9]+)\\]','\\1',as.character(model$log_lambda_star$variable)))
+    gsub('log_lambda_star\\[([0-9]+)\\]','\\1',
+         as.character(model$log_lambda_star$variable)))
+
 set(model$log_lambda_star, NULL, 'PRED_ID', as.integer(model$log_lambda_star$PRED_ID))
 setnames(model$log_lambda_star, c('value'), c('log_lambda_star'))
 set(model$log_lambda_star, NULL, 'variable', NULL)
@@ -74,8 +80,9 @@ gc()
 # make posterior predictions for each data point, conditional on the 
 # joint posterior for log_lambda
 set.seed(42L)
-logpoi_no_year_effect_model_lambda_star[,post_pred := rpois( nrow(logpoi_no_year_effect_model_lambda_star), 
-                                                   exp(log_lambda_star))]
+logpoi_no_year_effect_model_lambda_star[,post_pred := rpois(
+  nrow(logpoi_no_year_effect_model_lambda_star), 
+  exp(log_lambda_star))]
 
 # create median and 95\% credible intervals for variables 
 # using AGGREGATION over .draws
@@ -132,14 +139,14 @@ total_monthly_summary <- data.table::dcast(
 total_monthly_summary$MONTH <- factor(total_monthly_summary$MONTH, levels = month.name)  
 total_monthly_summary <- total_monthly_summary[order(total_monthly_summary$MONTH), ]
 
-t1 <- kbl(total_monthly_summary, 
+table1 <- kbl(total_monthly_summary, 
           caption = 'Total forecasted number of landfalls per month in the next 5 years', 
           longtable = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), font_size = 12)
 
-t1
+table1
 
-save_kable(t2, file = here("outputs", 
+save_kable(table1, file = here("outputs", 
                            "bayesian-analysis-landfall-freq", 
                            "landfalls-forecasts.html"))
 
@@ -156,7 +163,8 @@ webshot(here("outputs",
 # posterior predictive density for number of landfalls in 2025
 #-------------------------------------------------------------------------------
 
-forecast_2025 <- subset(landfalls[301:360], select = c('MONTH', 'YEAR', 'PRED_ID')) %>%
+forecast_2025 <- subset(landfalls[301:360], 
+                        select = c('MONTH', 'YEAR', 'PRED_ID')) %>%
   filter(YEAR == 2025)
 
 
@@ -168,7 +176,7 @@ forecast_2025 <- merge(logpoi_no_year_effect_model_lambda_star,
 forecast_2025$MONTH <- factor(forecast_2025$MONTH, levels = month.name)  
 forecast_2025 <- forecast_2025[order(forecast_2025$MONTH), ]
 
-p1 <- ggplot(forecast_2025, aes(x = post_pred)) +
+forecasts_25 <- ggplot(forecast_2025, aes(x = post_pred)) +
   geom_histogram(aes(y = after_stat(density)), 
                  binwidth = 1, 
                  fill = "steelblue",
@@ -181,12 +189,12 @@ p1 <- ggplot(forecast_2025, aes(x = post_pred)) +
        y = "P(L)") +
   theme(legend.position = "none")
 
-p1
+forecasts_25
 
 ggsave(here("outputs", 
             "bayesian-analysis-landfall-freq", 
             "landfall-density-plots.pdf"), 
-       plot =p1,
+       plot = forecasts_25,
        height = 10, 
        width = 10, 
        dpi=300)
