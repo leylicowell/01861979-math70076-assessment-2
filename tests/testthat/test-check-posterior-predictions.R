@@ -35,7 +35,6 @@ fit <- compiled$sample(data = list(N = 5, y = data$COUNT),
                        refresh = 0)
 
 plot <- check_posterior_predictions(model_fit = fit,
-                                    parameter = "log_lambda",
                                     data = data,
                                     observation_col = "OBS_ID",
                                     count_col = "COUNT",

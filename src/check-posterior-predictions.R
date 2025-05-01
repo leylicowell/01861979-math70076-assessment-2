@@ -52,7 +52,6 @@
 #' 
 #' check_posterior_predictions(
 #' model_fit = fit,
-#' parameter = "log_lambda",
 #' data = data,
 #' observation_col = "OBS_ID",
 #' count_col = "COUNT",
@@ -62,12 +61,12 @@
 
 
 check_posterior_predictions <- function(model_fit, 
-                                        parameter = "log_lambda", 
                                         data,
                                         observation_col,
                                         count_col,
                                         facet_col,
-                                        x_col){
+                                        x_col,
+                                        parameter = "log_lambda"){
   
   # extract Monte Carlo samples of vector log_lambda
   # each dimension in one column, each draw in one row
