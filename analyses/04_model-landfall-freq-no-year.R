@@ -181,8 +181,7 @@ webshot(here("outputs",
 #-------------------------------------------------------------------------------
 
 post_checks <- check_posterior_predictions(logpoi_no_year_effect_model_fit, 
-                                           'log_lambda', 
-                                           landfalls[1:300],
+                                           landfalls[1:stan_data$N],
                                            "ALL_ID",
                                            "LANDFALL_COUNT", 
                                            'MONTH', 

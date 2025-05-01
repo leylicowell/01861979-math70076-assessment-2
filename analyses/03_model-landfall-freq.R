@@ -167,13 +167,13 @@ all_combinations <- CJ(YEAR = 2000:2024, MONTH = 1:12)
 landfalls <- merge(all_combinations, landfalls, by = c('MONTH','YEAR'), all.x = TRUE)
 # we replace NA values (if any) with 0 
 set(landfalls, landfalls[, which(is.na(LANDFALL_COUNT))], 'LANDFALL_COUNT', 0)
-# replace month numbers with month names for readability
-landfalls <- landfalls %>%
-  mutate(MONTH = month.name[MONTH])
 
 # first define integer IDs
 landfalls$OBS_ID = 1:nrow(landfalls)
 
+# replace month numbers with month names for readability
+landfalls <- landfalls %>%
+  mutate(MONTH = month.name[MONTH])
 months <- unique(subset(landfalls, select = MONTH))
 months$MONTH_ID = 1:nrow(months)
 landfalls <- merge(landfalls, months, by = 'MONTH')
@@ -285,8 +285,7 @@ webshot(here("outputs",
 #-------------------------------------------------------------------------------
 
 post_checks <- check_posterior_predictions(logpoi_hsgp_model_fit, 
-                                           'log_lambda', 
-                                           landfalls[1:300],
+                                           landfalls[1:stan_data$N],
                                            "ALL_ID",
                                            "LANDFALL_COUNT", 
                                            'MONTH', 

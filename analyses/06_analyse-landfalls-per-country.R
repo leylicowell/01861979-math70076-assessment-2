@@ -1,7 +1,9 @@
-# In this script, we analyse the number of landfalls per country and year in 
-# our hurricane data.
-# we use a Bayesian Poisson regression model for the top 10 countries with the most
-# landfalls since 2000
+# In this script, we analyse the number of landfalls per country/territory and 
+# year in our hurricane data.
+# we use a Bayesian Poisson regression model for the top 10 countries/territories 
+# with the most landfalls since 2000
+# we then use our model to forecast the number of expected landfalls in each
+# of these countries/territories over the next 5 years
 
 #==============================================================================
 # load packages and functions
@@ -22,6 +24,7 @@ library(tidyr)
 
 source(here("src", "check-model-diagnostics.R"))
 source(here("src", "check-posterior-predictions.R"))
+source(here("src", "forecast-landfalls.R"))
 
 # set colour scheme for Stan
 bayesplot::color_scheme_set("brewer-RdYlBu")
@@ -34,7 +37,7 @@ landfall_data <- read.csv(here("data", "derived", "landfall-data.csv"))
 
 #==============================================================================
 # Run poisson regression model on data stratified by
-# country and year since 2000
+# country/territory and year since 2000
 #==============================================================================
 
 # define poisson regression model 
@@ -51,13 +54,19 @@ functions {
 data{
   int<lower=1> N; // number of observations
   int<lower=0> P; // number of countries
-  matrix[N,P] X; //predictors
+  matrix[N,P] X; // covariates
   array[N] int<lower=0> y; // outcomes
+  
+  int<lower=1> N_star; // number of unique inputs for prediction
+  matrix[N_star,P] X_star; // covariates for prediction
+  
 }
 transformed data{
   // sum-to-zero matrix
   real s2z_sd_b = inv(sqrt(1. - inv(P)));
   matrix[P, P-1] s2z_Q_b = sum2zero_generating_matrix(P);
+  int N_all; 
+  N_all = N + N_star;
 }
 parameters{
   real beta_0;
@@ -81,12 +90,20 @@ model{
   beta_s2z_m1_rnde ~ normal(0, s2z_sd_b);
   beta_sd ~ cauchy(0, 1);
 }
+generated quantities{
+  vector[N_star] log_lambda_star;
+  array[N_all] real y_all_pred;
+  
+  log_lambda_star = beta_0 + X_star * beta;
+  
+  y_all_pred = poisson_log_rng(append_row(log_lambda, log_lambda_star));
+}
 "
 #-------------------------------------------------------------------------------
 # define data in format needed for Stan model
 #-------------------------------------------------------------------------------
 
-# we count the number of landfalls per country to find countries with the
+# we count the number of landfalls per location to find places with the
 # most landfalls since 2000
 
 landfalls_per_location <- landfall_data %>%
@@ -120,15 +137,33 @@ landfall_freq$OBS_ID = 1:nrow(landfall_freq)
 top_ten_landfall_locations <- top_ten_landfall_locations[order(LOCATION),]
 top_ten_landfall_locations[, LOC_ID := 1:nrow(top_ten_landfall_locations)]
 landfall_freq <- merge(landfall_freq, 
-                       subset(top_ten_landfall_locations, select = c(LOCATION, LOC_ID)), 
+                       subset(top_ten_landfall_locations, 
+                              select = c(LOCATION, LOC_ID)), 
                               by = 'LOCATION')
 
-# now we make one hot design matrix for predictors
+# we now create a dataset that will contain both observed and forecast attributes
+forecasts <- CJ(YEAR = 2000:2029, LOCATION = top_ten_landfall_locations$LOCATION)
+
+forecasts <- left_join(forecasts,
+                       unique(subset(landfall_freq, select = c(LOCATION, LOC_ID))),
+                       by = 'LOCATION')
+
+landfall_freq <- left_join(forecasts, landfall_freq, by = c('YEAR','LOCATION', 'LOC_ID'))
+
+forecasts_id <- subset(landfall_freq, is.na(OBS_ID))
+forecasts_id$PRED_ID = 1:nrow(forecasts_id)
+landfall_freq <- left_join(landfall_freq, forecasts_id, by = colnames(landfall_freq))
+landfall_freq <- landfall_freq[order(OBS_ID),]
+landfall_freq[, ALL_ID := 1:nrow(landfall_freq)]
+
+# now we make one hot design matrix for predictors 
 predictors <- data.table::dcast(landfall_freq, 
-                                OBS_ID ~ LOC_ID, 
+                                ALL_ID ~ LOC_ID, 
                                 value.var = 'LANDFALL_NBR', 
                                 fun.aggregate = length)
-landfall_freq <- merge(landfall_freq, predictors, by = 'OBS_ID')
+landfall_freq <- merge(landfall_freq, predictors, by = 'ALL_ID')
+
+
 
 #-------------------------------------------------------------------------------
 # compile model
@@ -146,15 +181,27 @@ logpoi_country_model_compiled <- cmdstanr::cmdstan_model(logpoi_country_model_fi
 
 # define our Stan data
 stan_data <- list()
-stan_data$N <- nrow(landfall_freq)
+stan_data$N <- nrow(subset(landfall_freq, !is.na(OBS_ID)))
+stan_data$N_star <- nrow(subset(landfall_freq, !is.na(PRED_ID)))
 stan_data$P <- 10
-stan_data$X <- subset(landfall_freq, select = -c(OBS_ID, 
+stan_data$X <- subset(landfall_freq[1:stan_data$N,], select = -c(OBS_ID, 
                                                  LOCATION, 
                                                  YEAR, 
                                                  LANDFALL_NBR,
-                                                 LOC_ID))
+                                                 LOC_ID, 
+                                                 ALL_ID, 
+                                                 PRED_ID))
 stan_data$X <- unname(as.matrix(stan_data$X))
-stan_data$y <- landfall_freq$LANDFALL_NBR
+stan_data$X_star <- subset(landfall_freq[(stan_data$N+1):nrow(landfall_freq),], 
+                           select = -c(OBS_ID, 
+                                       LOCATION, 
+                                       YEAR, 
+                                       LANDFALL_NBR,
+                                       LOC_ID, 
+                                       ALL_ID, 
+                                       PRED_ID))
+stan_data$X_star <- unname(as.matrix(stan_data$X_star))
+stan_data$y <- landfall_freq[!is.na(OBS_ID), LANDFALL_NBR]
 
 
 # sample from joint posterior
@@ -204,9 +251,8 @@ webshot(here("outputs",
 
 # plot posterior predictive check for each location and each year
 post_checks <-  check_posterior_predictions(logpoi_country_model_fit, 
-                                   'log_lambda', 
-                                   landfall_freq,
-                                   'OBS_ID', 
+                                   landfall_freq[1:stan_data$N,],
+                                   'ALL_ID', 
                                    "LANDFALL_NBR", 
                                    'LOCATION', 
                                    'YEAR')
@@ -219,3 +265,40 @@ post_checks <- ggsave(here("outputs",
              height = 10, 
              width = 10, 
              dpi=300)
+
+
+#===============================================================================
+# forecast number of landfalls in next 5 years for each of the top 10 countries
+# and plot posterior predictive density for number of landfalls in 2025
+#===============================================================================
+
+forecast_data <- forecast_landfalls(logpoi_country_model_fit, landfall_freq, "LOCATION")
+
+forecast_table <- forecast_data[[1]]
+forecast_25_plot <- forecast_data[[2]]
+
+forecast_table
+forecast_25_plot
+
+save_kable(forecast_table, file = here("outputs", 
+                                       "bayesian-analysis-country-freq", 
+                                       "landfalls-forecasts.html"))
+
+# use webshot to capture the html table as a pdf
+webshot(here("outputs", 
+             "bayesian-analysis-country-freq", 
+             "landfalls-forecasts.html"), 
+        here("outputs", 
+             "bayesian-analysis-country-freq", 
+             "landfalls-forecasts.pdf"))
+
+
+ggsave(here("outputs", 
+            "bayesian-analysis-country-freq", 
+            "landfall-density-plots.pdf"), 
+       plot = forecast_25_plot,
+       height = 10, 
+       width = 10, 
+       dpi=300)
+
+
