@@ -35,16 +35,12 @@ p1 <- ggplot(landfalls_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
   geom_col(fill = "steelblue") +
   labs(x = "Year",
        y = "Number of Landfalls") +
-  theme_minimal()+
-  theme(
-    plot.background = element_rect(fill = "white"),
-    panel.background = element_rect(fill = "white", colour = NA)
-  )
+  theme_minimal()
 
 p1
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "landfalls-per-year.png"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfalls-per-year.pdf"), 
        plot = p1, 
        height = 4.5, 
        width = 7, 
@@ -84,17 +80,13 @@ p2 <- ggplot(avg_landfalls_per_month, aes(x = factor(MONTH, levels = month.name)
   geom_col(fill = "steelblue") +
   labs(x = "Month",
        y = "Average Number of Landfalls") +
-  theme_minimal() + 
-  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
-        plot.background = element_rect(fill = "white"),
-        panel.background = element_rect(fill = "white", colour = NA)
-        )
+  theme_minimal() 
 
 p2
 # we see a significant increase in the number of cyclones in August-October
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "avg-landfalls-per-month.png"), 
+ggsave(here("outputs", "eda-hurricane-data", "avg-landfalls-per-month.pdf"), 
        plot = p2,
        height = 4.5,
        width = 7, dpi=600)
@@ -126,16 +118,12 @@ p3 <- ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = 
   geom_col(fill = "steelblue") +
   labs(x = "Number of Landfalls per Cyclone",
        y = "Number of Cyclones") +
-  theme_minimal()+
-  theme(
-    plot.background = element_rect(fill = "white"),
-    panel.background = element_rect(fill = "white", colour = NA)
-  )
+  theme_minimal()
 
 p3
 
 # save output
-ggsave(here("outputs","eda-hurricane-data", "nbr-cyclone-landfalls.png"), 
+ggsave(here("outputs","eda-hurricane-data", "nbr-cyclone-landfalls.pdf"), 
        plot = p3, 
        height = 4.5, 
        width = 7, 
@@ -194,7 +182,7 @@ p4 <- ggplot() +
 p4
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "landfall-map.png"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfall-map.pdf"), 
        plot =p4,
        height = 4, 
        width = 10, 
@@ -236,7 +224,7 @@ p5 <- ggplot(data = landfalls_per_location) +
   geom_sf(aes(fill = LANDFALL_NUM), color = "black", linewidth = 0.125) +
   coord_sf(xlim = c(-180, -10), ylim = c(-5, 85), expand = FALSE) +
   scale_fill_gradientn(
-    colors = c("#fcf9cb", "#fef67e","#f07028", "#ff6232", "#bd1d12"),  # Light red to dark red
+    colors = c("#fcf9cb", "#fef67e","#f07028", "#ff6232", "#bd1d12"),  
     values = rescale(c(0, 1, 20, 50, 150))) +
   theme_minimal() +
   labs(fill = "Number of Landfalls") +
@@ -270,7 +258,7 @@ p5 <- ggplot(data = landfalls_per_location) +
 p5
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "landfall-countries.png"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfall-countries.pdf"), 
        plot =p5,
        height = 10, 
        width = 10, 
@@ -320,7 +308,7 @@ p6 <- ggplot(data = landfalls_per_location) +
 p6
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "landfall-locations.png"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfall-locations.pdf"), 
        plot =p6,
        height = 10, 
        width = 10, 

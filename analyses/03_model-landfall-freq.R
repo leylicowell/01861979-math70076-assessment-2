@@ -270,7 +270,7 @@ save_kable(model_diagnostics, file = here("outputs",
                            "model-HSGP", 
                            "HSGP-model-diagnostics.html"))
 
-# use webshot to capture the html table as a png
+# use webshot to capture the html table as a pdf
 webshot(here("outputs", 
              "bayesian-analysis-landfall-freq",
              "model-HSGP", 
@@ -296,7 +296,7 @@ post_checks
 post_checks <- ggsave(here("outputs", 
                   "bayesian-analysis-landfall-freq",
                   "model-HSGP",
-                  "HSGP-post-pred-checks.png"), 
+                  "HSGP-post-pred-checks.pdf"), 
             plot = post_checks, 
             height = 10, 
             width = 10, 
