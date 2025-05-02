@@ -192,11 +192,11 @@ post_checks
 post_checks <- ggsave(here("outputs", 
                   "bayesian-analysis-landfall-freq",
                   "model-no-year-effect", 
-                  "no-year-post-pred-checks.pdf"), 
+                  "no-year-post-pred-checks.png"), 
              plot = post_checks, 
              height = 10, 
              width = 10, 
-             dpi=300)
+             dpi=600)
 
 
 

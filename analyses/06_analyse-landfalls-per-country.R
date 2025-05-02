@@ -261,10 +261,10 @@ post_checks
 
 post_checks <- ggsave(here("outputs", 
                   "bayesian-analysis-country-freq",
-                  "country-post-pred-checks.pdf"), 
+                  "country-post-pred-checks.png"), 
              plot = post_checks, 
              height = 10, 
              width = 10, 
-             dpi=300)
+             dpi=600)
 
 

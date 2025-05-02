@@ -40,11 +40,11 @@ p1 <- ggplot(landfalls_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
 p1
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "landfalls-per-year.pdf"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfalls-per-year.png"), 
        plot = p1, 
        height = 4.5, 
        width = 7, 
-       dpi=300)
+       dpi=600)
 
 
 #==============================================================================
@@ -87,10 +87,10 @@ p2
 # we see a significant increase in the number of cyclones in August-October
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "avg-landfalls-per-month.pdf"), 
+ggsave(here("outputs", "eda-hurricane-data", "avg-landfalls-per-month.png"), 
        plot = p2,
        height = 4.5,
-       width = 7, dpi=300)
+       width = 7, dpi=600)
 
 #==============================================================================
 # we now want to look closer into how many times cyclones landfall
@@ -124,11 +124,11 @@ p3 <- ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = 
 p3
 
 # save output
-ggsave(here("outputs","eda-hurricane-data", "nbr-cyclone-landfalls.pdf"), 
+ggsave(here("outputs","eda-hurricane-data", "nbr-cyclone-landfalls.png"), 
        plot = p3, 
        height = 4.5, 
        width = 7, 
-       dpi=300)
+       dpi=600)
 
 #==============================================================================
 # we also want to inspect cyclone paths for cyclones that landfall 2000-2024
@@ -183,7 +183,7 @@ p4 <- ggplot() +
 p4
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "landfall-map.pdf"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfall-map.png"), 
        plot =p4,
        height = 4, 
        width = 10, 
@@ -259,7 +259,7 @@ p5 <- ggplot(data = landfalls_per_location) +
 p5
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "landfall-countries.pdf"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfall-countries.png"), 
        plot =p5,
        height = 10, 
        width = 10, 
@@ -275,7 +275,7 @@ p6 <- ggplot(data = landfalls_per_location) +
   geom_point(data = landfall_data, 
              aes(x = LON, y = LAT), 
              color = "red", 
-             alpha = 0.5, 
+             alpha = 0.4, 
              size = 1) +
   coord_sf(xlim = c(-180, -10), ylim = c(-5, 85), expand = FALSE) +
   theme_minimal() +
@@ -309,7 +309,7 @@ p6 <- ggplot(data = landfalls_per_location) +
 p6
 
 # save output
-ggsave(here("outputs", "eda-hurricane-data", "landfall-locations.pdf"), 
+ggsave(here("outputs", "eda-hurricane-data", "landfall-locations.png"), 
        plot =p6,
        height = 10, 
        width = 10, 

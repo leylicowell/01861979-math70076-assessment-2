@@ -208,11 +208,11 @@ webshot(here("outputs",
 
 ggsave(here("outputs", 
             "bayesian-analysis-landfall-freq", 
-            "landfall-monthly-density-plots.pdf"), 
+            "landfall-monthly-density-plots.png"), 
        plot = monthly_forecast_25_plot,
        height = 10, 
        width = 10, 
-       dpi=300)
+       dpi=600)
 
 
 #===============================================================================
@@ -245,11 +245,11 @@ webshot(here("outputs",
 
 ggsave(here("outputs", 
             "bayesian-analysis-country-freq", 
-            "landfall-per-country-density-plots.pdf"), 
+            "landfall-per-country-density-plots.png"), 
        plot = country_forecast_25_plot,
        height = 10, 
        width = 10, 
-       dpi=300)
+       dpi=600)
 
 
 
