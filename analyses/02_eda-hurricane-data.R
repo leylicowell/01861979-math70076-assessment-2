@@ -35,7 +35,11 @@ p1 <- ggplot(landfalls_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
   geom_col(fill = "steelblue") +
   labs(x = "Year",
        y = "Number of Landfalls") +
-  theme_minimal()
+  theme_minimal()+
+  theme(
+    plot.background = element_rect(fill = "white"),
+    panel.background = element_rect(fill = "white", colour = NA)
+  )
 
 p1
 
@@ -81,7 +85,10 @@ p2 <- ggplot(avg_landfalls_per_month, aes(x = factor(MONTH, levels = month.name)
   labs(x = "Month",
        y = "Average Number of Landfalls") +
   theme_minimal() + 
-  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1))
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        plot.background = element_rect(fill = "white"),
+        panel.background = element_rect(fill = "white", colour = NA)
+        )
 
 p2
 # we see a significant increase in the number of cyclones in August-October
@@ -119,7 +126,11 @@ p3 <- ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = 
   geom_col(fill = "steelblue") +
   labs(x = "Number of Landfalls per Cyclone",
        y = "Number of Cyclones") +
-  theme_minimal()
+  theme_minimal()+
+  theme(
+    plot.background = element_rect(fill = "white"),
+    panel.background = element_rect(fill = "white", colour = NA)
+  )
 
 p3
 
