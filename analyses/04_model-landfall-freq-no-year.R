@@ -31,7 +31,7 @@ bayesplot::color_scheme_set("brewer-RdYlBu")
 
 landfalls <- as.data.table(read.csv(here("data", 
                                          "derived", 
-                                         "stan-landfall-freq-data.csv")))
+                                         "stan-landfall-monthly-freq.csv")))
 
 #==============================================================================
 # Run poisson regression model without year effect on data stratified by

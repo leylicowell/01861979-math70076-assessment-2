@@ -24,7 +24,6 @@ library(tidyr)
 
 source(here("src", "check-model-diagnostics.R"))
 source(here("src", "check-posterior-predictions.R"))
-source(here("src", "forecast-landfalls.R"))
 
 # set colour scheme for Stan
 bayesplot::color_scheme_set("brewer-RdYlBu")
@@ -163,7 +162,10 @@ predictors <- data.table::dcast(landfall_freq,
                                 fun.aggregate = length)
 landfall_freq <- merge(landfall_freq, predictors, by = 'ALL_ID')
 
-
+# we save this data set as we will use it later on, in our forecast analysis
+write.csv(landfall_freq, 
+          file = file.path(here("data", "derived"), "stan-landfall-per-country-freq.csv"), 
+          row.names = FALSE)
 
 #-------------------------------------------------------------------------------
 # compile model
@@ -220,7 +222,6 @@ logpoi_country_model_fit$save_object(file = file.path(here("outputs",
                                                            "stan-models", 
                                                            "country-model-cmdstanr.rds")))
 
-
 #-------------------------------------------------------------------------------
 # check mixing and convergence of model parameters
 #-------------------------------------------------------------------------------
@@ -265,40 +266,5 @@ post_checks <- ggsave(here("outputs",
              height = 10, 
              width = 10, 
              dpi=300)
-
-
-#===============================================================================
-# forecast number of landfalls in next 5 years for each of the top 10 countries
-# and plot posterior predictive density for number of landfalls in 2025
-#===============================================================================
-
-forecast_data <- forecast_landfalls(logpoi_country_model_fit, landfall_freq, "LOCATION")
-
-forecast_table <- forecast_data[[1]]
-forecast_25_plot <- forecast_data[[2]]
-
-forecast_table
-forecast_25_plot
-
-save_kable(forecast_table, file = here("outputs", 
-                                       "bayesian-analysis-country-freq", 
-                                       "landfalls-forecasts.html"))
-
-# use webshot to capture the html table as a pdf
-webshot(here("outputs", 
-             "bayesian-analysis-country-freq", 
-             "landfalls-forecasts.html"), 
-        here("outputs", 
-             "bayesian-analysis-country-freq", 
-             "landfalls-forecasts.pdf"))
-
-
-ggsave(here("outputs", 
-            "bayesian-analysis-country-freq", 
-            "landfall-density-plots.pdf"), 
-       plot = forecast_25_plot,
-       height = 10, 
-       width = 10, 
-       dpi=300)
 
 

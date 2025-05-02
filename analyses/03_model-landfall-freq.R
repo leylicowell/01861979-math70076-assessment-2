@@ -200,7 +200,7 @@ landfalls[, ALL_ID := 1:nrow(landfalls)]
 
 # we save this data set as we will use it later on, in our model without the year effect
 write.csv(landfalls, 
-          file = file.path(here("data", "derived"), "stan-landfall-freq-data.csv"), 
+          file = file.path(here("data", "derived"), "stan-landfall-monthly-freq.csv"), 
           row.names = FALSE)
 
 #-------------------------------------------------------------------------------
