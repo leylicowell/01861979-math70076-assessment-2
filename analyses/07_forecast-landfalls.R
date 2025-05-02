@@ -43,6 +43,7 @@ landfalls_per_country <- read.csv(here("data", "derived", "stan-landfall-per-cou
 #===============================================================================
 
 forecast_landfalls <- function(model_fit, data, category_name){
+  
   model <- list()
   model$log_lambda_star <- model_fit$draws(
     variables = "log_lambda_star", 
@@ -88,8 +89,9 @@ forecast_landfalls <- function(model_fit, data, category_name){
     value.var = 'summary_value')
   
   # merge data using INNER JOIN
-  data
-  forecast_summary <- subset(data[!is.na(PRED_ID)], select = c(category_name, 'YEAR', 'PRED_ID'))
+  data <- as.data.table(data)
+  forecast_summary <- subset(data[!is.na(data$PRED_ID)], 
+                             select = c(category_name, 'YEAR', 'PRED_ID'))
   forecast_summary <- merge(forecast_summary, model_star_summary, by = 'PRED_ID')
   set(forecast_summary, NULL, 'PRED_ID', NULL)
   
@@ -184,8 +186,9 @@ forecast_landfalls <- function(model_fit, data, category_name){
 monthly_forecast_data <- forecast_landfalls(logpoi_no_year_effect_model_fit, 
                                             landfalls_monthly, 
                                             "MONTH")
-monthly_forecast_table <- forecast_data[[1]]
-monthly_forecast_25_plot <- forecast_data[[2]]
+
+monthly_forecast_table <- monthly_forecast_data[[1]]
+monthly_forecast_25_plot <- monthly_forecast_data[[2]]
 
 monthly_forecast_table
 monthly_forecast_25_plot
@@ -197,10 +200,10 @@ save_kable(monthly_forecast_table, file = here("outputs",
 # use webshot to capture the html table as a pdf
 webshot(here("outputs", 
              "bayesian-analysis-landfall-freq", 
-             "landfalls-monhtly-forecasts.html"), 
+             "landfalls-monthly-forecasts.html"), 
         here("outputs", 
              "bayesian-analysis-landfall-freq", 
-             "landfalls-monhtly-forecasts.pdf"))
+             "landfalls-monthly-forecasts.pdf"))
 
 
 ggsave(here("outputs", 
@@ -217,15 +220,17 @@ ggsave(here("outputs",
 # and plot posterior predictive density for number of landfalls in 2025
 #===============================================================================
 
-country_forecast_data <- forecast_landfalls(logpoi_country_model_fit, landfalls_per_country, "LOCATION")
+country_forecast_data <- forecast_landfalls(logpoi_country_model_fit,
+                                            landfalls_per_country, 
+                                            "LOCATION")
 
-country_forecast_table <- forecast_data[[1]]
-country_forecast_25_plot <- forecast_data[[2]]
+country_forecast_table <- country_forecast_data[[1]]
+country_forecast_25_plot <- country_forecast_data[[2]]
 
 country_forecast_table
 country_forecast_25_plot
 
-save_kable(forecast_table, file = here("outputs", 
+save_kable(country_forecast_table, file = here("outputs", 
                                        "bayesian-analysis-country-freq", 
                                        "landfalls-per-country-forecasts.html"))
 
