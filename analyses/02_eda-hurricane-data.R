@@ -265,9 +265,53 @@ ggsave(here("outputs", "eda-hurricane-data", "landfall-countries.pdf"),
        width = 10, 
        dpi=600)
 
-landfalls_per_location <- landfall_data %>%
-  filter(LOCATION %in% top_ten_landfall_locations$name_long) %>%
-  group_by(LOCATION, YEAR) %>%
-  summarise(LANDFALL_NUM = n(), .groups = "drop")
 
+#==============================================================================
+# finally we map specific landfall locations
+#==============================================================================
 
+p6 <- ggplot(data = landfalls_per_location) +
+  geom_sf(fill = "beige", color = "black", linewidth = 0.125)+
+  geom_point(data = landfall_data, 
+             aes(x = LON, y = LAT), 
+             color = "red", 
+             alpha = 0.5, 
+             size = 1) +
+  coord_sf(xlim = c(-180, -10), ylim = c(-5, 85), expand = FALSE) +
+  theme_minimal() +
+  labs(fill = "Number of Landfalls") +
+  geom_sf_text(data = top_ten_landfall_locations, 
+               aes(label = name_long), 
+               size = 2.5, 
+               fontface = "bold", 
+               color = "black",
+               nudge_x = case_when(
+                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 8, 
+                 top_ten_landfall_locations$name_long == "Belize" ~ 3,  
+                 top_ten_landfall_locations$name_long == "Cuba" ~ 2.5, 
+                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 5.2,
+                 top_ten_landfall_locations$name_long == "Bahamas" ~ 7,
+                 top_ten_landfall_locations$name_long == "Antigua and Barbuda" ~ 9,
+                 .default = 0), 
+               nudge_y = case_when(
+                 top_ten_landfall_locations$name_long == "Cuba" ~ 0.75,
+                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 0.85,
+                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 1.75,  
+                 top_ten_landfall_locations$name_long == "Bahamas" ~ -1,
+                 .default = 0)) +
+  theme(
+    axis.text = element_blank(),  
+    axis.title = element_blank(),  
+    panel.background = element_rect(fill = "#bde5ff"),
+    panel.grid = element_blank()
+  )
+
+p6
+
+# save output
+ggsave(here("outputs", "eda-hurricane-data", "landfall-locations.pdf"), 
+       plot =p6,
+       height = 10, 
+       width = 10, 
+       dpi=600)
+  
