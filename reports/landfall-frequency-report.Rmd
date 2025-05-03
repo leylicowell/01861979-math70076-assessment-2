@@ -1,13 +1,21 @@
 ---
 title: "Cyclone Landfall Frequency Analysis: <br> Identifying High-Risk Countries and Territories on the American continent"
 abstract: "Using Bayesian methods and cylone data from 2000 to 2024, this report tracks and forecasts tropical cyclone landfall occurrences on the American continent. Seasonality patterns and yearly trends are investigated as well as regions most vulnerable to tropical cyclone impacts. The analysis showed a clear seasonal pattern, with most cyclone landfalls expected between June and November, yet no significant yearly trends, suggesting there is no strong long-term change in landfall occurrences over the studied period. The United States of America and Mexico stand out as the most high risk countries, with 30 and 28 predicted landfalls, respectively,  over the next five years."
-output: pdf_document
+output: 
+  bookdown::pdf_book:
+    keep_tex: yes
 bibliography: ["references.bib"]
 csl: harvard-imperial-college-london.csl
 link-citations: true
 ---
 
-## 1. Introduction
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+library(gridExtra)
+```
+
+# Introduction
 
 Tropical cyclones are among the most destructive natural disasters, causing the highest number of casualties compared to all other natural disasters [@casualties] as well as severe economic losses globally. These storms cause the most damage as they move toward land, bringing along extreme winds, heavy rainfall, storm surges and floods [@landfall-damages]. Even when coastal communities are evacuated, cyclones can still cause extreme damage to properties and infrastructure as well as a significant loss of agricultural production. In addition to these, cyclone landfalls have long-term impacts, including economic slowdown, loss of coastal ecosystems and wildlife habitats, loss of businesses (especially local/family-owned enterprises), permanent displacement of coastal communities and significant rebuilding costs that can strain government budgets. More frequent and repeated exposure to these landfalls limits recovery time, leaving areas unprotected or poorly rebuilt, further exacerbating the associated damages.
 
@@ -18,7 +26,7 @@ Historically, landfall locations and frequency have been quite variable, but cer
 In this report, we focus on the evolution of hurricane landfall frequency since 2000 as well as analysing any monthly trends, by using Bayesian Poisson regression models and cyclone track data. We restrict our analysis to the American continent, investigating landfalls originating in the Atlantic basin (Atlantic Ocean, Caribbean Sea, and Gulf of America) and the Eastern Pacific basin (which extends from the western coast of Mexico and Central America to 140°W) [@eastern-pacific]. Our aim is to identify monthly patterns and long-term trends in landfall frequency, as well as to highlight the most vulnerable countries and territories, in order to guide resource allocation and optimise disaster preparedness and response.
 
 
-## 2. Data and Methodology
+# Data and Methodology
 
 We based our analysis on the Atlantic hurricane database (HURDAT2), 1851-2024, more recently updated on April 4th, 2025 to include in the 2024 hurricane season, as well as the Northeast and North Central Pacific hurricane database (HURDAT2), 1949-2024, most recently updated on March 17, 2025 to include the 2024 hurricane season. These data sets are provided by the National Hurricane Center (NHC), as part of the National Oceanic and Atmospheric Administration (NOAA) and provides records of cyclone coordinates, maximum winds, central pressure, system status at 6 hour intervals. The HURDAT2 databases also include additional records outside of the standard intervals if the cyclone makes landfall, unexpectedly changes status or intensity or reaches a peak in terms of wind speed or pressure. 
 
@@ -36,21 +44,50 @@ Using our best performing seasonal model and our geographical model, we then sim
 
 For more details on methodology and technical analysis, please refer to the Appendix.
 
-## 3. Results
+# Results
 
-### 3.1 Cyclone trends over time
+## Cyclone trends over time
 
-- plots of yearly number of cyclones and monthly cyclone numbers/ landfall frequency
+To better understand cyclone landfall patterns in the last few decades, we first explored the frequency and distribution of landfalls from 2000 to 2024. 
 
-- talk about models (again not very technical)
+```{r figs1, echo=FALSE, fig.align='center', fig.show='hold', out.width="49%", out.height="100%", fig.cap = "(a) Number of cyclone landfalls per year (2000–2024). (b) Number of landfalls per cyclone (2000-2024). (c) Average number of landfalls per month (averaging across 2000-2024)."}
+landfalls_per_year <- here("outputs", "eda-hurricane-data", "landfalls-per-year.pdf")
+landfalls_per_month <- here("outputs", "eda-hurricane-data", "avg-landfalls-per-month.pdf")
+landfalls_per_cyclone <- here("outputs", "eda-hurricane-data", "nbr-cyclone-landfalls.pdf")
 
-- landfall probability plots
+knitr::include_graphics(c(landfalls_per_year, landfalls_per_cyclone, landfalls_per_month))
 
-- landfall predictions
+```
 
-- what this means
+Figure \@ref(fig:figs1) summarises key trends in landfall occurrences over time, including the total number of landfalls per year, the number of landfalls per cyclone, and the average number of landfalls per month. These plots provide insight into both seasonal patterns and the highly variable nature of cyclone landfalls, as well as the typical landfall frequency for each individual tropical cyclone from 2000 to 2024. Annual landfall counts show significant year-to-year fluctuations, reflecting the highly variable nature of cyclone landfalls, whereas the monthly landfall averages show a clear seasonal pattern, with most cyclones making landfall between June and November, consistent with the Atlantic hurricane season [@hurricane-season]. While most tropical cyclones never make landfall, it is important to remember that a single landfall can result in immense destruction of both human life and infrastructure, reinforcing the importance of monitoring these rare yet costly events.
 
-### 3.2 areas at high risk
+To explore yearly and monthly patterns in cyclone landfalls, we fitted two Bayesian Poisson regression models to our landfall count data, stratified by year and month. These models allowed us to assess both long-term variability and within-year seasonality. The first model included both a monthly seasonal effect and an annual effect, while the second focused only on monthly seasonality. Having compared model performance using Leave-One-Out Cross Validation (LOO), we found that both models performed very similarly, although the simpler seasonal model provided a slightly better fit to our data, suggesting that while year-to-year landfall occurrences are quite variable, there is no consistent long-term trend across the studied 25-year period.
+
+The final seasonal model was then used to simulate landfall occurrences in 2025, on a monthly basis, showing an expected peak in landfall activity between August and October.
+
+```{r figs2, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Estimated probability distribution of cyclone landfalls per month in 2025, based on the seasonal model.", out.width = "82%"}
+landfalls_monthly_prob <- here("outputs", "bayesian-analysis-landfall-freq", "landfall-monthly-density-plots.pdf")
+
+knitr::include_graphics(landfalls_monthly_prob)
+```
+
+Figure \@ref(fig:figs2) shows a clear seasonal pattern in our landfall forecasts, aligning with the typical Atlantic and Pacific hurricane seasons. This figure also emphasises the rarity of landfall occurrences outside of these peak months, with a very low probability of seeing any landfalls at all.
+
+We then took our analysis one step further and examined expected landfall forecasts per month over the next five years (2025-2029).
+
+```{r figs3, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Forecasted number of landfalls per month, 2025-2029, based on the seasonal model.", out.width = "100%"}
+landfalls_monthly_forecasts <- here("outputs", "bayesian-analysis-landfall-freq", "simple-landfalls-monthly-forecasts.png")
+
+knitr::include_graphics(landfalls_monthly_forecasts)
+```
+
+Figure \@ref(fig:figs3) displays the total forecasted number of cyclone landfalls per month from 2025 to 2029, showing the 2.5% and 97.5% quantiles and the median value of total landfalls for each month. These values serve as a measure of statistical uncertainty associated with our model. We expect the actual number of total landfalls over this five year period to fall between 2.5% and 97.5% quantile values with 95% certainty. 
+
+The forecast predicts the highest number of landfalls in September, with a median value of 31 landfalls, followed closely by August and October, with median values of 24 and 22 landfalls, respectively. The months of January to April and December are forecasted to experience significantly fewer landfalls, with the median forecast for total landfalls being close to zero in these months. 
+
+Our forecasts also highlight the unpredictability of cyclone landfalls, with considerable spread between the 2.5% quantile and 97.5% quantile in the June to November months. The wide range of uncertainty in our forecasts for these months underlines the importance of continued research into cyclone activity as to refine and improve model predictions.
+
+## areas at high risk
 
 - map plots
 
@@ -63,25 +100,17 @@ For more details on methodology and technical analysis, please refer to the Appe
 - what this means
 
 
-## 4. Recommendations
+# Recommendations
 
-## 5. Limitations of models and data biases
+# Limitations of models and data biases
 
-## 6. Conclusion
+# Conclusion
 
-## References
+# References
 
 <div id="refs"></div>
 
-## Appendix - Technical description of analysis and data processing
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(here)
-```
-
-
+# Appendix - Technical description of analysis and data processing
 
 
 ```{r, echo=FALSE, fig.align='center'}

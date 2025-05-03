@@ -1,0 +1,248 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Cyclone Landfall Frequency Analysis:   Identifying High-Risk Countries and Territories on the American continent},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Cyclone Landfall Frequency Analysis: Identifying High-Risk Countries and Territories on the American continent}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Using Bayesian methods and cylone data from 2000 to 2024, this report tracks and forecasts tropical cyclone landfall occurrences on the American continent. Seasonality patterns and yearly trends are investigated as well as regions most vulnerable to tropical cyclone impacts. The analysis showed a clear seasonal pattern, with most cyclone landfalls expected between June and November, yet no significant yearly trends, suggesting there is no strong long-term change in landfall occurrences over the studied period. The United States of America and Mexico stand out as the most high risk countries, with 30 and 28 predicted landfalls, respectively, over the next five years.
+\end{abstract}
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Introduction}\label{introduction}
+
+Tropical cyclones are among the most destructive natural disasters, causing the highest number of casualties compared to all other natural disasters (\citeproc{ref-casualties}{Li \& Li, 2013}) as well as severe economic losses globally. These storms cause the most damage as they move toward land, bringing along extreme winds, heavy rainfall, storm surges and floods (\citeproc{ref-landfall-damages}{Baradaranshoraka et al., 2017}). Even when coastal communities are evacuated, cyclones can still cause extreme damage to properties and infrastructure as well as a significant loss of agricultural production. In addition to these, cyclone landfalls have long-term impacts, including economic slowdown, loss of coastal ecosystems and wildlife habitats, loss of businesses (especially local/family-owned enterprises), permanent displacement of coastal communities and significant rebuilding costs that can strain government budgets. More frequent and repeated exposure to these landfalls limits recovery time, leaving areas unprotected or poorly rebuilt, further exacerbating the associated damages.
+
+Governments and disaster relief organisations have put together a variety of measures over the years, intended to mitigate these risks, including early warning systems, evacuation plans and strengthening infrastructure. However, the unpredictability of cyclone landfalls and the extent of regional disparities makes it crucial to understand landfall patterns and trends, in order to optimise response strategies tailored to communities in need.
+
+Historically, landfall locations and frequency have been quite variable, but certain countries, such as the United States of America and Mexico, experience higher incidences than others. As such, understanding and accurately forecasting when and where cyclones are most likely to strike is essential for assessing the vulnerability of different areas, resource allocation and disaster planning. By identifying the areas at greatest risk as well as the landfall seasonal peaks, governments and organisations can ensure that resources such as emergency supplies, medical teams, and infrastructure support are on hand.
+
+In this report, we focus on the evolution of hurricane landfall frequency since 2000 as well as analysing any monthly trends, by using Bayesian Poisson regression models and cyclone track data. We restrict our analysis to the American continent, investigating landfalls originating in the Atlantic basin (Atlantic Ocean, Caribbean Sea, and Gulf of America) and the Eastern Pacific basin (which extends from the western coast of Mexico and Central America to 140°W) (\citeproc{ref-eastern-pacific}{Ocegueda Sanchez, Chavas \& Jones, 2025}). Our aim is to identify monthly patterns and long-term trends in landfall frequency, as well as to highlight the most vulnerable countries and territories, in order to guide resource allocation and optimise disaster preparedness and response.
+
+\section{Data and Methodology}\label{data-and-methodology}
+
+We based our analysis on the Atlantic hurricane database (HURDAT2), 1851-2024, more recently updated on April 4th, 2025 to include in the 2024 hurricane season, as well as the Northeast and North Central Pacific hurricane database (HURDAT2), 1949-2024, most recently updated on March 17, 2025 to include the 2024 hurricane season. These data sets are provided by the National Hurricane Center (NHC), as part of the National Oceanic and Atmospheric Administration (NOAA) and provides records of cyclone coordinates, maximum winds, central pressure, system status at 6 hour intervals. The HURDAT2 databases also include additional records outside of the standard intervals if the cyclone makes landfall, unexpectedly changes status or intensity or reaches a peak in terms of wind speed or pressure.
+
+Although the Atlantic HURDAT2 database goes back to 1851, the NHC indicates that track data from the nineteenth century is often incomplete and inaccurate due to less advanced technology and therefore under reported and under analysed measurements. Moreover, international landfalls are only marked from 1951 to 1970 and 1991 onward, leading to significant gap in historical data.
+
+Our analysis therefore focuses on landfall trends from 2000 to 2024, thus ensuring consistency and making use of improved landfall measurements. However, it is important to note that this introduces some limitations to our models, such as evaluating long term trends using a relatively short time period and sparse data, making our model predictions more susceptible to our initial assumptions.
+
+Once we collected our data, we used geographical data, containing country outlines and coordinates, and combined these with our landfall coordinates to determine where the cyclone crossed a coastline. We say a cyclone makes landfall when the center of the system crosses a coastline. This center, however, usually ranges from 32 to 64km and therefore, certain landfall coordinates did not point to any land. In these cases, we mapped the landfall data points to the nearest country. We also note that certain cyclones make more than one landfall, however for the purpose of this report, our analysis focuses solely on the number of landfalls.
+
+We first modeled the number of cyclone landfalls per month and year using Bayesian Poisson regression models (\citeproc{ref-Elsner}{Elsner, Bossak \& Niu, 2001}), in order to explore any seasonality effects and yearly trends. Our first model included both a monthly effect and a non-linear yearly effect, due to the high fluctuations in cyclone landfall numbers per year. Our second model only included the monthly effect, ignoring any long-term trends. We then used a statistical method called Leave-One-Out Cross Validation (LOO) to select the model with the best performance, in this case, our second model.
+
+Our third model then investigated where cyclones were most likely to land, amongst the top 10 countries and commonwealths which have experienced the most cyclone landfalls since 2000. These include Antigua and Barbuda, the Bahamas, Belize, Canada, Cuba, the Dominican Republic, Mexico, Nicaragua, Puerto Rico and the United States of America.
+
+Using our best performing seasonal model and our geographical model, we then simulated landfall counts for each month as well as for each of the ten most affected countries and territories over the next five years (2025 to 2029). These forecasts thus support preparedness, planning and resource allocation in high risk areas.
+
+For more details on methodology and technical analysis, please refer to the Appendix.
+
+\section{Results}\label{results}
+
+\subsection{Cyclone trends over time}\label{cyclone-trends-over-time}
+
+To better understand cyclone landfall patterns in the last few decades, we first explored the frequency and distribution of landfalls from 2000 to 2024.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.49\linewidth,height=1\textheight]{../outputs/eda-hurricane-data/landfalls-per-year} \includegraphics[width=0.49\linewidth,height=1\textheight]{../outputs/eda-hurricane-data/nbr-cyclone-landfalls} \includegraphics[width=0.49\linewidth,height=1\textheight]{../outputs/eda-hurricane-data/avg-landfalls-per-month} 
+
+}
+
+\caption{(a) Number of cyclone landfalls per year (2000–2024). (b) Number of landfalls per cyclone (2000-2024). (c) Average number of landfalls per month (averaging across 2000-2024).}\label{fig:figs1}
+\end{figure}
+
+Figure \ref{fig:figs1} summarises key trends in landfall occurrences over time, including the total number of landfalls per year, the number of landfalls per cyclone, and the average number of landfalls per month. These plots provide insight into both seasonal patterns and the highly variable nature of cyclone landfalls, as well as the typical landfall frequency for each individual tropical cyclone from 2000 to 2024. Annual landfall counts show significant year-to-year fluctuations, reflecting the highly variable nature of cyclone landfalls, whereas the monthly landfall averages show a clear seasonal pattern, with most cyclones making landfall between June and November, consistent with the Atlantic hurricane season (\citeproc{ref-hurricane-season}{Truchelut et al., 2022}). While most tropical cyclones never make landfall, it is important to remember that a single landfall can result in immense destruction of both human life and infrastructure, reinforcing the importance of monitoring these rare yet costly events.
+
+To explore yearly and monthly patterns in cyclone landfalls, we fitted two Bayesian Poisson regression models to our landfall count data, stratified by year and month. These models allowed us to assess both long-term variability and within-year seasonality. The first model included both a monthly seasonal effect and an annual effect, while the second focused only on monthly seasonality. Having compared model performance using Leave-One-Out Cross Validation (LOO), we found that both models performed very similarly, although the simpler seasonal model provided a slightly better fit to our data, suggesting that while year-to-year landfall occurrences are quite variable, there is no consistent long-term trend across the studied 25-year period.
+
+The final seasonal model was then used to simulate landfall occurrences in 2025, on a monthly basis, showing an expected peak in landfall activity between August and October.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.82\linewidth]{../outputs/bayesian-analysis-landfall-freq/landfall-monthly-density-plots} 
+
+}
+
+\caption{Estimated probability distribution of cyclone landfalls per month in 2025, based on the seasonal model.}\label{fig:figs2}
+\end{figure}
+
+Figure \ref{fig:figs2} shows a clear seasonal pattern in our landfall forecasts, aligning with the typical Atlantic and Pacific hurricane seasons. This figure also emphasises the rarity of landfall occurrences outside of these peak months, with a very low probability of seeing any landfalls at all.
+
+We then took our analysis one step further and examined expected landfall forecasts per month over the next five years (2025-2029).
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-landfall-freq/simple-landfalls-monthly-forecasts} 
+
+}
+
+\caption{Forecasted number of landfalls per month, 2025-2029, based on the seasonal model.}\label{fig:figs3}
+\end{figure}
+
+Figure \ref{fig:figs3} displays the total forecasted number of cyclone landfalls per month from 2025 to 2029, showing the 2.5\% and 97.5\% quantiles and the median value of total landfalls for each month. These values serve as a measure of statistical uncertainty associated with our model. We expect the actual number of total landfalls over this five year period to fall between 2.5\% and 97.5\% quantile values with 95\% certainty.
+
+The forecast predicts the highest number of landfalls in September, with a median value of 31 landfalls, followed closely by August and October, with median values of 24 and 22 landfalls, respectively. The months of January to April and December are forecasted to experience significantly fewer landfalls, with the median forecast for total landfalls being close to zero in these months.
+
+Our forecasts also highlight the unpredictability of cyclone landfalls, with considerable spread between the 2.5\% quantile and 97.5\% quantile in the June to November months. The wide range of uncertainty in our forecasts for these months underlines the importance of continued research into cyclone activity as to refine and improve model predictions.
+
+\subsection{areas at high risk}\label{areas-at-high-risk}
+
+\begin{itemize}
+\item
+  map plots
+\item
+  talk about model
+\item
+  landfall probabiltiy plots
+\item
+  landfall predictions
+\item
+  what this means
+\end{itemize}
+
+\section{Recommendations}\label{recommendations}
+
+\section{Limitations of models and data biases}\label{limitations-of-models-and-data-biases}
+
+\section{Conclusion}\label{conclusion}
+
+\section{References}\label{references}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{0}{1}
+\bibitem[\citeproctext]{ref-landfall-damages}
+Baradaranshoraka, M., Pinelli, J.-P., Gurley, K., Peng, X. \& Zhao, M. (2017) Hurricane wind versus storm surge damage in the context of a risk prediction model. \emph{Journal of Structural Engineering}. 143 (9), 04017103. doi:\href{https://doi.org/10.1061/(ASCE)ST.1943-541X.0001824}{10.1061/(ASCE)ST.1943-541X.0001824}.
+
+\bibitem[\citeproctext]{ref-Elsner}
+Elsner, J.B., Bossak, B.H. \& Niu, X.-F. (2001) Secular changes to the ENSO-u.s. Hurricane relationship. \emph{Geophysical Research Letters}. 28 (21), 4123--4126. doi:\url{https://doi.org/10.1029/2001GL013669}.
+
+\bibitem[\citeproctext]{ref-casualties}
+Li, K. \& Li, G. (2013) {Risk assessment on storm surges in the coastal area of Guangdong Province}. \emph{Natural Hazards: Journal of the International Society for the Prevention and Mitigation of Natural Hazards}. 68 (2), 1129--1139. doi:\href{https://doi.org/10.1007/s11069-013-0682-2}{10.1007/s11069-013-0682-2}.
+
+\bibitem[\citeproctext]{ref-eastern-pacific}
+Ocegueda Sanchez, J.A., Chavas, D.R. \& Jones, J.J. (2025) Interannual variability of tropical cyclone landfalls in the eastern north pacific: Environmental drivers and implications. \emph{Geophysical Research Letters}. 52 (8), e2024GL113807. doi:\url{https://doi.org/10.1029/2024GL113807}.
+
+\bibitem[\citeproctext]{ref-hurricane-season}
+Truchelut, R.E., Klotzbach, P.J., Staehling, E.M., Wood, K.M., Halperin, D.J., Schreck, C.J. \& Blake, E.S. (2022) Earlier onset of {North} {Atlantic} hurricane season with warming oceans. \emph{Nature Communications}. 13 (1), 4646. doi:\href{https://doi.org/10.1038/s41467-022-31821-3}{10.1038/s41467-022-31821-3}.
+
+\end{CSLReferences}
+
+\section{Appendix - Technical description of analysis and data processing}\label{appendix---technical-description-of-analysis-and-data-processing}
+
+\begin{center}\includegraphics{../outputs/eda-hurricane-data/landfall-map} \end{center}
+
+\end{document}
