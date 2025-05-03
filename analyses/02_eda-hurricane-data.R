@@ -35,7 +35,8 @@ p1 <- ggplot(landfalls_per_year, aes(x = YEAR, y = CYCLONE_NUM)) +
   geom_col(fill = "steelblue") +
   labs(x = "Year",
        y = "Number of Landfalls") +
-  theme_minimal()
+  theme_minimal()+
+  theme(panel.border = element_rect(color = "black", fill = NA))
 
 p1
 
@@ -80,7 +81,8 @@ p2 <- ggplot(avg_landfalls_per_month, aes(x = factor(MONTH, levels = month.name)
   geom_col(fill = "steelblue") +
   labs(x = "Month",
        y = "Average Number of Landfalls") +
-  theme_minimal() 
+  theme_minimal() +
+  theme(panel.border = element_rect(color = "black", fill = NA))
 
 p2
 # we see a significant increase in the number of cyclones in August-October
@@ -118,7 +120,8 @@ p3 <- ggplot(landfall_summary, aes(x = factor(CATEGORY, levels = CATEGORY), y = 
   geom_col(fill = "steelblue") +
   labs(x = "Number of Landfalls per Cyclone",
        y = "Number of Cyclones") +
-  theme_minimal()
+  theme_minimal() +
+  theme(panel.border = element_rect(color = "black", fill = NA))
 
 p3
 
@@ -163,8 +166,9 @@ p4 <- ggplot() +
                col = "#808080", 
                linewidth = 0.2) +  
   theme(panel.background = element_rect(fill = "#3f7ec0", color = NA),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(color = "black", fill = NA)) +
   geom_path(data = landfall_cyclones, aes(x = LON, 
                                       y = LAT, 
                                       group = STORM_ID, 
