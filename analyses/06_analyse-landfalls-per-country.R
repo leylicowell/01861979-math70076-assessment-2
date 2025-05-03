@@ -244,7 +244,9 @@ webshot(here("outputs",
              "country-model-diagnostics.html"), 
         here("outputs", 
              "bayesian-analysis-country-freq",
-             "country-model-diagnostics.pdf"))
+             "country-model-diagnostics.png"),
+        selector = "table",
+        zoom = 2)
 
 #-------------------------------------------------------------------------------
 # posterior predictive checks

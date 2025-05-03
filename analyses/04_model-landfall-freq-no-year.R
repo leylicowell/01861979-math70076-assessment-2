@@ -174,7 +174,9 @@ webshot(here("outputs",
         here("outputs", 
              "bayesian-analysis-landfall-freq",
              "model-no-year-effect", 
-             "no-year-model-diagnostics.pdf"))
+             "no-year-model-diagnostics.png"),
+        selector = "table",
+        zoom = 2)
 
 #-------------------------------------------------------------------------------
 # posterior predictive checks

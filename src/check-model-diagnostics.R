@@ -40,11 +40,10 @@ check_model_diagnostics <- function(model_fit, var, warmup = TRUE, warmup_nbr = 
   
   # save table of 5 (or all parameters if there are less than 5) worst performing parameters
   t1 <- kbl(subset(model_summary[1:min(5, nrow(model_summary)),], 
-                   select = c(variable, rhat, ess_bulk, ess_tail)),
-            caption = 'Model diagnostics for 5 worst performing parameters', 
+                   select = c(variable, rhat, ess_bulk, ess_tail)), 
             longtable = TRUE) %>%
-    kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                  font_size = 12) 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"), 
+                  font_size = 16) 
   
   
   # make trace plot of worst performing parameter

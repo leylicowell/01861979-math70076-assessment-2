@@ -117,29 +117,46 @@ forecast_landfalls <- function(model_fit, data, category_name){
   
   group_sums <- as.data.table(group_sums)
   
+  simple_group_summary <- group_sums[,list( 
+    summary_value = quantile(group_total, prob =c(0.025, 0.5, 0.975)),
+    summary_name = c('2.5% quantile','median', '97.5% quantile')),
+    by = category_name]
+  
   total_group_summary <- group_sums[,list( 
     summary_value = quantile(group_total, prob =c(0.025, 0.25,  0.5, 0.75, 0.975)),
     summary_name = c('2.5% quantile', 'IQR_lower','median', 'IQR_upper', '97.5% quantile')),
     by = category_name]
+  
+  simple_group_summary <- data.table::dcast(
+    simple_group_summary, 
+    as.formula(paste0(category_name, " ~ summary_name")), 
+    value.var = 'summary_value')
   
   total_group_summary <- data.table::dcast(
     total_group_summary, 
     as.formula(paste0(category_name, " ~ summary_name")), 
     value.var = 'summary_value')
   
+  
   if(category_name == 'MONTH'){
     # reorder months in chronological order
     total_group_summary[[category_name]]<- factor(total_group_summary[[category_name]], 
                                                   levels = month.name)  
     total_group_summary <- total_group_summary[order(total_group_summary[[category_name]]), ]
+    simple_group_summary[[category_name]]<- factor(simple_group_summary[[category_name]], 
+                                                  levels = month.name)  
+    simple_group_summary <- simple_group_summary[order(simple_group_summary[[category_name]]), ]
   }
   
+  simple_forecast_table <- kbl(simple_group_summary, 
+                               longtable = TRUE) %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"), 
+                  font_size = 16)
   
   forecast_table <- kbl(total_group_summary, 
-                        caption = paste0('Total forecasted number of landfalls per ', 
-                                         tolower(category_name), ' in the next 5 years'), 
                         longtable = TRUE) %>%
-    kable_styling(bootstrap_options = c("striped", "hover", "condensed"), font_size = 12)
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"), 
+                  font_size = 16)
   
   #  plot posterior predictive density for number of landfalls in 2025
   forecasts_2025 <- subset(data[!is.na(PRED_ID)], 
@@ -164,15 +181,17 @@ forecast_landfalls <- function(model_fit, data, category_name){
                    fill = "steelblue",
                    alpha = 0.7, 
                    color = "black") +
-    facet_wrap(~ get(category_name), ncol = 3) +  # Create a separate plot for each month
+    facet_wrap(~ get(category_name), ncol = 3) + 
     theme_bw() +
-    labs(title = "Posterior Density Plots for 2025 Landfall Predictions", 
-         x = "Number of Landfalls, L", 
-         y = "P(L)") +
-    theme(legend.position = "none")
+    labs(x = "Number of Landfalls, N", 
+         y = "Probability of N landfalls") +
+    theme(legend.position = "none",
+          axis.title = element_text(size = 18), 
+          axis.text = element_text(size = 16),
+          strip.text = element_text(size = 14, face = "bold"))
   
   
-  return(list(forecast_table, forecasts_25_plot))
+  return(list(forecast_table, forecasts_25_plot, simple_forecast_table))
   
 }
 
@@ -189,9 +208,12 @@ monthly_forecast_data <- forecast_landfalls(logpoi_no_year_effect_model_fit,
 
 monthly_forecast_table <- monthly_forecast_data[[1]]
 monthly_forecast_25_plot <- monthly_forecast_data[[2]]
+simple_monthly_forecast_table <- monthly_forecast_data[[3]]
 
 monthly_forecast_table
+simple_monthly_forecast_table
 monthly_forecast_25_plot
+
 
 save_kable(monthly_forecast_table, file = here("outputs", 
                                                "bayesian-analysis-landfall-freq", 
@@ -203,7 +225,23 @@ webshot(here("outputs",
              "landfalls-monthly-forecasts.html"), 
         here("outputs", 
              "bayesian-analysis-landfall-freq", 
-             "landfalls-monthly-forecasts.pdf"))
+             "landfalls-monthly-forecasts.png"),
+        selector = "table",
+        zoom = 2)
+
+save_kable(simple_monthly_forecast_table, file = here("outputs", 
+                                                      "bayesian-analysis-landfall-freq", 
+                                                      "simple-landfalls-monthly-forecasts.html"))
+
+# use webshot to capture the html table as a pdf
+webshot(here("outputs", 
+             "bayesian-analysis-landfall-freq", 
+             "simple-landfalls-monthly-forecasts.html"), 
+        here("outputs", 
+             "bayesian-analysis-landfall-freq", 
+             "simple-landfalls-monthly-forecasts.png"),
+        selector = "table",
+        zoom = 2)
 
 
 ggsave(here("outputs", 
@@ -226,9 +264,11 @@ country_forecast_data <- forecast_landfalls(logpoi_country_model_fit,
 
 country_forecast_table <- country_forecast_data[[1]]
 country_forecast_25_plot <- country_forecast_data[[2]]
+simple_country_forecast_table <- country_forecast_data[[3]]
 
 country_forecast_table
 country_forecast_25_plot
+simple_country_forecast_table
 
 save_kable(country_forecast_table, file = here("outputs", 
                                        "bayesian-analysis-country-freq", 
@@ -240,7 +280,23 @@ webshot(here("outputs",
              "landfalls-per-country-forecasts.html"), 
         here("outputs", 
              "bayesian-analysis-country-freq", 
-             "landfalls-per-country-forecasts.pdf"))
+             "landfalls-per-country-forecasts.png"),
+        selector = "table",
+        zoom = 2)
+
+save_kable(simple_monthly_forecast_table, file = here("outputs", 
+                                                      "bayesian-analysis-country-freq", 
+                                                      "simple-landfalls-per-country-forecasts.html"))
+
+# use webshot to capture the html table as a pdf
+webshot(here("outputs", 
+             "bayesian-analysis-country-freq", 
+             "simple-landfalls-per-country-forecasts.html"), 
+        here("outputs", 
+             "bayesian-analysis-country-freq", 
+             "simple-landfalls-per-country-forecasts.png"),
+        selector = "table",
+        zoom = 2)
 
 
 ggsave(here("outputs", 

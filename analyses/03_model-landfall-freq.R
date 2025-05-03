@@ -278,7 +278,9 @@ webshot(here("outputs",
         here("outputs",
              "bayesian-analysis-landfall-freq",
              "model-HSGP", 
-             "HSGP-model-diagnostics.pdf"))
+             "HSGP-model-diagnostics.png"),
+        selector = "table",
+        zoom = 2)
 
 #-------------------------------------------------------------------------------
 # posterior predictive checks

@@ -54,8 +54,9 @@ print(comp, simplify = FALSE)
 comp_data <- as.data.frame(comp)
 
 # create table
-comp_table <- kbl(comp_data, caption = "LOO Model Comparison") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+comp_table <- kbl(comp_data) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"),
+                font_size = 16)
 
 print(comp_table)
 
@@ -70,7 +71,9 @@ webshot(here("outputs",
              "best-model-comp.html"), 
         here("outputs", 
              "bayesian-analysis-landfall-freq", 
-             "best-model-comp.pdf"))
+             "best-model-comp.png"),
+        selector = "table",
+        zoom = 2)
 
 
 
