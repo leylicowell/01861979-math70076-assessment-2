@@ -87,7 +87,8 @@ p2 <- ggplot(avg_landfalls_per_month, aes(x = factor(MONTH, levels = month.name)
   theme_minimal() +
   theme(panel.border = element_rect(color = "black", fill = NA),
         axis.title = element_text(size = 18), 
-        axis.text.x = element_text(size = 16, angle = 45,vjust = 1,hjust = 1))
+        axis.text.x = element_text(size = 16, angle = 45,vjust = 1,hjust = 1),
+        axis.text.y = element_text(size = 16))
 p2
 # we see a significant increase in the number of cyclones in August-October
 
