@@ -13,6 +13,7 @@ library(data.table)
 library(scales)
 library(sf)
 library(rnaturalearth)
+library(cowplot)
 
 
 #==============================================================================
@@ -228,50 +229,105 @@ top_ten_landfall_locations <- landfalls_per_location %>%
 
 top_ten_landfall_locations <- top_ten_landfall_locations[1:10,]
 
+# we exclude anigua and barbuda label for now as we will create a zoom in box
+locations_no_antigua <- top_ten_landfall_locations %>%
+  filter(name_long != "Antigua and Barbuda")
+
 # plot map of countries most at risk
-p5 <- ggplot(data = landfalls_per_location) +
+main_map <- ggplot(data = landfalls_per_location) +
   geom_sf(aes(fill = LANDFALL_NUM), color = "black", linewidth = 0.125) +
   coord_sf(xlim = c(-180, -10), ylim = c(-5, 85), expand = FALSE) +
   scale_fill_gradientn(
     colors = c("#fcf9cb", "#fef67e","#f07028", "#ff6232", "#bd1d12"),  
     values = rescale(c(0, 1, 20, 50, 150))) +
   theme_minimal() +
-  labs(fill = "Number of Landfalls") +
-  geom_sf_text(data = top_ten_landfall_locations, 
+  labs(fill = "Number of Landfalls", size = 20) +
+  geom_sf_text(data = locations_no_antigua, 
                aes(label = name_long), 
-               size = 2.5, 
+               size = 3, 
                fontface = "bold", 
                color = "black",
                nudge_x = case_when(
-                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 8, 
-                 top_ten_landfall_locations$name_long == "Belize" ~ 3,  
-                 top_ten_landfall_locations$name_long == "Cuba" ~ 2.5, 
-                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 5.2,
-                 top_ten_landfall_locations$name_long == "Bahamas" ~ 7,
-                 top_ten_landfall_locations$name_long == "Antigua and Barbuda" ~ 9,
+                 locations_no_antigua$name_long == "Dominican Republic" ~ 10, 
+                 locations_no_antigua$name_long == "Belize" ~ 5,  
+                 locations_no_antigua$name_long == "Cuba" ~ 2.5, 
+                 locations_no_antigua$name_long == "Puerto Rico" ~ 10,
+                 locations_no_antigua$name_long == "Bahamas" ~ 9.5,
                  .default = 0), 
                nudge_y = case_when(
-                 top_ten_landfall_locations$name_long == "Cuba" ~ 0.75,
-                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 0.85,
-                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 1.75,  
-                 top_ten_landfall_locations$name_long == "Bahamas" ~ -1,
+                 locations_no_antigua$name_long == "Cuba" ~ 1.5,
+                 locations_no_antigua$name_long == "Puerto Rico" ~ 0.75,
+                 locations_no_antigua$name_long == "Dominican Republic" ~ 2,  
+                 locations_no_antigua$name_long == "Bahamas" ~ -1,
+                 locations_no_antigua$name_long == "Nicaragua" ~ -0.75,
                  .default = 0)) +
   theme(
     axis.text = element_blank(),  
     axis.title = element_blank(),  
     panel.background = element_rect(fill = "#bde5ff"),
-    panel.grid = element_blank()
+    panel.grid = element_blank(),
+    legend.title = element_text(size = 15),
+    legend.text = element_text(size = 12.5)
   )
 
 
-p5
+locations_antigua <- top_ten_landfall_locations %>%
+  filter(name_long == "Antigua and Barbuda")
+
+
+# add box around antigua and barbuda on main map
+main_map <- main_map +
+  annotate("rect",
+           xmin = -62.16, xmax = -61.3,
+           ymin = 16.7, ymax = 18,
+           color = "black", fill = NA, linewidth = 0.3)
+  
+zoom_in <- main_map +
+  coord_sf(xlim = c(-62.16, -61.3), 
+           ylim = c(16.7, 18),
+           expand = FALSE) +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        panel.background = element_rect(fill = "#bde5ff"),
+        panel.grid = element_blank(),
+        legend.position = "none" ) +
+  geom_sf_text(data = locations_antigua, 
+               aes(label = str_wrap(name_long, width = 15)), 
+               size = 3, 
+               fontface = "bold", 
+               color = "black",
+               nudge_x = 0.05,
+               nudge_y = 0.3)
+  
+# check that maps look correct
+zoom_in
+main_map
+
+# compose main + inset
+p5 <- ggdraw() +
+  draw_plot(main_map) +
+  draw_plot(
+    zoom_in,
+    x      = 0.525,   
+    y      = 0.15,
+    width  = 0.3,     
+    height = 0.3
+  ) +
+  draw_line(x = c(0.53, 0.635),  
+            y = c(0.26, 0.26), 
+            color = "black",
+            linewidth = 0.2)
+
+
+p5 # looks much better in saved output
 
 # save output
 ggsave(here("outputs", "eda-hurricane-data", "landfall-countries.pdf"), 
        plot =p5,
-       height = 10, 
+       height = 5, 
        width = 10, 
        dpi=600)
+
 
 
 #==============================================================================
@@ -290,36 +346,40 @@ p6 <- ggplot(data = landfalls_per_location) +
   labs(fill = "Number of Landfalls") +
   geom_sf_text(data = top_ten_landfall_locations, 
                aes(label = name_long), 
-               size = 2.5, 
+               size = 3, 
                fontface = "bold", 
                color = "black",
                nudge_x = case_when(
-                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 8, 
-                 top_ten_landfall_locations$name_long == "Belize" ~ 3,  
+                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 10, 
+                 top_ten_landfall_locations$name_long == "Belize" ~ 5,  
                  top_ten_landfall_locations$name_long == "Cuba" ~ 2.5, 
-                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 5.2,
-                 top_ten_landfall_locations$name_long == "Bahamas" ~ 7,
+                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 10,
+                 top_ten_landfall_locations$name_long == "Bahamas" ~ 8,
                  top_ten_landfall_locations$name_long == "Antigua and Barbuda" ~ 9,
                  .default = 0), 
                nudge_y = case_when(
-                 top_ten_landfall_locations$name_long == "Cuba" ~ 0.75,
-                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 0.85,
-                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 1.75,  
+                 top_ten_landfall_locations$name_long == "Cuba" ~ 1.5,
+                 top_ten_landfall_locations$name_long == "Puerto Rico" ~ 0.75,
+                 top_ten_landfall_locations$name_long == "Dominican Republic" ~ 2,  
                  top_ten_landfall_locations$name_long == "Bahamas" ~ -1,
+                 top_ten_landfall_locations$name_long == "Nicaragua" ~ -0.75,
                  .default = 0)) +
   theme(
     axis.text = element_blank(),  
     axis.title = element_blank(),  
     panel.background = element_rect(fill = "#bde5ff"),
-    panel.grid = element_blank()
+    panel.grid = element_blank(),
+    legend.title = element_text(size = 15),
+    legend.text = element_text(size = 12.5)
   )
+
 
 p6
 
 # save output
 ggsave(here("outputs", "eda-hurricane-data", "landfall-locations.pdf"), 
        plot =p6,
-       height = 10, 
+       height = 5, 
        width = 10, 
        dpi=600)
   

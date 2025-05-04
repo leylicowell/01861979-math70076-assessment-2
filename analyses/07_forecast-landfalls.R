@@ -284,7 +284,7 @@ webshot(here("outputs",
         selector = "table",
         zoom = 2)
 
-save_kable(simple_monthly_forecast_table, file = here("outputs", 
+save_kable(simple_country_forecast_table, file = here("outputs", 
                                                       "bayesian-analysis-country-freq", 
                                                       "simple-landfalls-per-country-forecasts.html"))
 
