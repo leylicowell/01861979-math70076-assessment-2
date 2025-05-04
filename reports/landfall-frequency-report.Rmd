@@ -28,7 +28,7 @@ In this report, we focus on the evolution of hurricane landfall frequency since 
 
 # Data and Methodology
 
-We based our analysis on the Atlantic hurricane database (HURDAT2), 1851-2024, more recently updated on April 4th, 2025 to include in the 2024 hurricane season, as well as the Northeast and North Central Pacific hurricane database (HURDAT2), 1949-2024, most recently updated on March 17, 2025 to include the 2024 hurricane season. These data sets are provided by the National Hurricane Center (NHC), as part of the National Oceanic and Atmospheric Administration (NOAA) and provides records of cyclone coordinates, maximum winds, central pressure, system status at 6 hour intervals. The HURDAT2 databases also include additional records outside of the standard intervals if the cyclone makes landfall, unexpectedly changes status or intensity or reaches a peak in terms of wind speed or pressure. 
+We based our analysis on the Atlantic hurricane database (HURDAT2), 1851-2024, more recently updated on April 4th, 2025 to include the 2024 hurricane season, as well as the Northeast and North Central Pacific hurricane database (HURDAT2), 1949-2024, most recently updated on March 17, 2025 to include the 2024 hurricane season. These data sets are provided by the National Hurricane Center (NHC), as part of the National Oceanic and Atmospheric Administration (NOAA) and provides records of cyclone coordinates, maximum winds, central pressure, system status at 6 hour intervals. The HURDAT2 databases also include additional records outside of the standard intervals if the cyclone makes landfall, unexpectedly changes status or intensity or reaches a peak in terms of wind speed or pressure. 
 
 Although the Atlantic HURDAT2 database goes back to 1851, the NHC indicates that track data from the nineteenth century is often incomplete and inaccurate due to less advanced technology and therefore under reported and under analysed measurements. Moreover, international landfalls are only marked from 1951 to 1970 and 1991 onward, leading to significant gap in historical data. 
 
@@ -83,28 +83,96 @@ knitr::include_graphics(landfalls_monthly_forecasts)
 
 Figure \@ref(fig:figs3) displays the total forecasted number of cyclone landfalls per month from 2025 to 2029, showing the 2.5% and 97.5% quantiles and the median value of total landfalls for each month. These values serve as a measure of statistical uncertainty associated with our model. We expect the actual number of total landfalls over this five year period to fall between 2.5% and 97.5% quantile values with 95% certainty. 
 
-The forecast predicts the highest number of landfalls in September, with a median value of 31 landfalls, followed closely by August and October, with median values of 24 and 22 landfalls, respectively. The months of January to April and December are forecasted to experience significantly fewer landfalls, with the median forecast for total landfalls being close to zero in these months. 
+The forecast predicts the highest number of total landfalls in September, with a median value of 31 landfalls, followed closely by August and October, with median values of 24 and 22 landfalls, respectively. The months of January to April and December are forecasted to experience significantly fewer landfalls, with the median forecast for total landfalls being close to zero in these months. 
 
 Our forecasts also highlight the unpredictability of cyclone landfalls, with considerable spread between the 2.5% quantile and 97.5% quantile in the June to November months. The wide range of uncertainty in our forecasts for these months underlines the importance of continued research into cyclone activity as to refine and improve model predictions.
 
-## areas at high risk
+## High-risk countries and territories
 
-- map plots
+Before developing our geographical model, we first investigated landfalling cyclone paths from 2000 to 2024. This exploratory analysis plays a crucial role in highlighting cyclone patterns such as intensity, frequency and geographical distribution of landfalls. By visualising cyclone paths and location of landfalls, we can determine which countries and territories are consistently impacted, helping to prioritise areas most in need for our forecasting model. 
 
-- talk about model
+```{r figs4, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Landfalling cyclone paths in the East Pacific and Atlantic basins, 2000-2024."}
+cyclone_paths <- here("outputs", "eda-hurricane-data", "landfall-map.pdf")
 
-- landfall probabiltiy plots
+knitr::include_graphics(cyclone_paths)
+```
+Figure \@ref(fig:figs4) shows the full path of tropical cyclones that made landfall between 2000 and 2024 across the East Pacific and Atlantic basins. Each path represents an individual cyclone, as well as its wind speed as the cyclone advances. This map highlights how far cyclones can travel before making landfall, emphasising the importance of early detection and consistent monitoring for effective cyclone preparedness.
 
-- landfall predictions
+The erratic nature of cyclone paths, seen by the sudden changes in direction and intensity can leave communities with limited time to evacuate, reinforcing the critical need for raising awareness of regions most vulnerable so governments can enhance response systems, invest in resilient infrastructure and access needed support.
 
-- what this means
+We next took a closer look at landfall locations from 2000 to 2024 in order to identify regions most affected by landfalling cyclones.
 
+```{r figs5, echo=FALSE, fig.align='center', fig.show='hold', out.width = "100%", fig.cap = "Number of tropical cyclone landfalls per country, 2000-2024."}
+landfall_countries <- here("outputs", "eda-hurricane-data", "landfall-countries.pdf")
+
+knitr::include_graphics(landfall_countries)
+```
+
+```{r figs6, echo=FALSE, fig.align='center', fig.show='hold', out.width = "100%", fig.cap = "Landfall geographical locations, 2000-2024."}
+landfall_locations <- here("outputs", "eda-hurricane-data", "landfall-locations.pdf")
+
+
+knitr::include_graphics(landfall_locations)
+```
+
+Figure \@ref(fig:figs5) provides a national-level overview of landfall frequency in the last 25 years, with the United States, Mexico, Nicaragua, the Bahamas, Cuba and Canada standing out as the most impacted by cyclone activity, thus identifying countries with the highest exposure to cyclone landfalls. This is crucial for establishing which governments need the most support.
+
+Figure \@ref(fig:figs6), in contrast, provides a geographical overview of landfall locations since 2000, allowing us to identify which coastal regions are must vulnerable to cyclone activity. We see that the Gulf Coast and East Coast of the United States experience a high number of landfalls, whereas the Pacific coast of the United States hasn't seen any since 2000. On the other hand, both Mexico's East and West coasts have high landfall exposure. This map is particularly important for local disaster preparedness, showing which areas are most susceptible to damages caused by cyclone landfalls.
+
+
+To explore geographical patterns in cyclone landfalls, we fitted a Bayesian Poisson regression model to our landfall count data, now stratified by year and location. This model allowed us to assess country and territory-level vulnerability related to cyclone landfalls. Our model ignored yearly time trends based on the results of our previous time-based models (where we saw a better performance from our model without a year effect). Instead, this model incorporated country and territory-level effects for the top ten countries with the most landfalls since 2000: the United States of America, Mexico, Cuba, the Bahamas, Nicaragua, Canada, Belize, Dominican Republic, Antigua and Barbuda and Puerto Rico, as seen in Figure \@ref(fig:figs5). 
+
+We then used this model to simulate landfall occurrences in 2025, for each of these countries and territories, showing an expected peak in landfall activity in the United States of America and Mexico.
+
+```{r figs7, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Estimated probability distribution of cyclone landfalls per country and territory in 2025.", out.width = "82%"}
+landfalls_country_prob <- here("outputs", "bayesian-analysis-country-freq", "landfall-per-country-density-plots.pdf")
+
+knitr::include_graphics(landfalls_country_prob)
+```
+
+\newpage
+
+Figure \@ref(fig:figs7) clearly isolated the United States of America and Mexico as the most vulnerable regions in 2025, even amongst the top ten landfall-exposed countries. This figure reinforces the rarity of landfall occurrences outside of these two countries, with other countries having a very low probability of seeing any landfalls. 
+
+We then took our analysis one step further and examined expected landfall forecasts for each of our top ten countries and territories over the next five years (2025-2029).
+
+```{r figs8, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Forecasted number of landfalls per country and territory, 2025-2029.", out.width = "100%"}
+country_forecasts <- here("outputs", "bayesian-analysis-country-freq", "simple-landfalls-per-country-forecasts.png")
+
+knitr::include_graphics(country_forecasts)
+```
+
+Figure \@ref(fig:figs8) displays the total forecasted number of cyclone landfalls per country and territory from 2025 to 2029, showing the 2.5% and 97.5% quantiles and the median value of total landfalls for each month. 
+
+The forecast predicts the highest number of total landfalls in the United States of America, followed closely by Mexico , with median values of 30 and 29 landfalls, respectively. Puerto Rico, the Dominican Republic and Antigua and Barbuda have the lowest forecasted landfalls, with a median value of total landfalls over the next 5 years close to zero, despite being in the top ten most exposed countries and territories. 
+
+Our forecasts once again highlight the unpredictability of cyclone landfalls, with considerable spread between the 2.5% and 97.5% quantiles for some of our countries and territories such as the United States of America, Mexico, the Bahamas and Cuba. The wide range of uncertainty in our forecasts for these countries once again underlines the importance of continued research into cyclone activity as to refine and improve model predictions.
 
 # Recommendations
 
+Based on our analysis of historical landfall patterns and probabilistic forecasts, we recommend the following actions to reinforce cyclone preparedness and resource allocation:
+
+- Allocate emergency supplies and necessary resources ahead of the peak season (June to November) with response units in place and ready to act, especially in August to October, when the probability of landfalls reaches a peak.
+- Prioritise the United States of America and Mexico, followed by the Bahamas and Cuba, for storing medical kits, food, water, and to put in place temporary shelters.
+- Support local authorities in vulnerable areas through evacuation drills and strengthening infrastructure (especially hospitals, schools, and emergency shelters).
+
+By aligning these targets with the seasonal and geographic insights from our models, organisations can reduce disaster response times, minimise casualties, and accelerate recovery. 
+
 # Limitations of models and data biases
 
+While our Bayesian Poisson regression models provide valuable insights, several limitations should be considered:
+
+- Landfall coordinates which fell over water were mapped to the nearest country, introducing geographical uncertainty.
+- Our models treated all landfalls equally, without distinguishing storm intensity or amount of damage caused.
+- The data used in our model was sparse, and the resulting choice to ignore yearly time trends in cyclone behaviour over 2000–2024, may lead to inaccuracies due to accelerating climate change.
+- Wide credible intervals in our five‑year forecasts reflect both variability and uncertainty in our forecasts.
+- Our models do not account for population density, infrastructure quality, or socioeconomic resilience, which influence actual humanitarian need. While countries like the United States may experience the highest number of landfalls, their relatively stronger economic resilience allows for stronger infrastructure and faster recovery. In contrast, economically weaker countries in the region may face catastrophic consequences from even a single cyclone landfall. These regions might benefit more and rely more heavily on humanitarian aid to reduce the impact of cyclone landfalls on vulnerable populations and infrastructure.
+
 # Conclusion
+
+This report demonstrates a clear seasonal cycle in tropical cyclone landfalls, with most occurring between June and November. Our results indicate that there is no significant trend in annual landfall counts from 2000 to 2024. Moreover, our forecasts identify the United States and Mexico as the highest‑risk countries over the next five years, with a substantial probability of multiple landfalls in each hurricane season.
+
+Through our use of Bayesian models, we hope to provide actionable insights to help humanitarian agencies and governments optimise cyclone preparedness and resource allocation. Despite some uncertainties and data limitations, these findings offer a foundation for region-specific disaster risk reduction efforts.
 
 # References
 
@@ -113,7 +181,3 @@ Our forecasts also highlight the unpredictability of cyclone landfalls, with con
 # Appendix - Technical description of analysis and data processing
 
 
-```{r, echo=FALSE, fig.align='center'}
-pdf_file <- here("outputs", "eda-hurricane-data", "landfall-map.pdf")
-knitr::include_graphics(pdf_file)
-```
