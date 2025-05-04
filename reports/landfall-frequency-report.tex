@@ -242,7 +242,9 @@ Figure \ref{fig:figs6}, in contrast, provides a geographical overview of landfal
 
 To explore geographical patterns in cyclone landfalls, we fitted a Bayesian Poisson regression model to our landfall count data, now stratified by year and location. This model allowed us to assess country and territory-level vulnerability related to cyclone landfalls. Our model ignored yearly time trends based on the results of our previous time-based models (where we saw a better performance from our model without a year effect). Instead, this model incorporated country and territory-level effects for the top ten countries with the most landfalls since 2000: the United States of America, Mexico, Cuba, the Bahamas, Nicaragua, Canada, Belize, Dominican Republic, Antigua and Barbuda and Puerto Rico, as seen in Figure \ref{fig:figs5}.
 
-We then used this model to simulate landfall occurrences in 2025, for each of these countries and territories, showing an expected peak in landfall activity in the United States of America and Mexico.
+We then used this model to simulate landfall occurrences in 2025, for each of these countries and territories. Figure \ref{fig:figs7} clearly isolated the United States of America and Mexico as the most vulnerable regions in 2025, even amongst the top ten landfall-exposed countries. This figure reinforces the rarity of landfall occurrences outside of these two countries, with other countries having a very low probability of seeing any landfalls.
+
+\newpage
 
 \begin{figure}
 
@@ -252,10 +254,6 @@ We then used this model to simulate landfall occurrences in 2025, for each of th
 
 \caption{Estimated probability distribution of cyclone landfalls per country and territory in 2025.}\label{fig:figs7}
 \end{figure}
-
-\newpage
-
-Figure \ref{fig:figs7} clearly isolated the United States of America and Mexico as the most vulnerable regions in 2025, even amongst the top ten landfall-exposed countries. This figure reinforces the rarity of landfall occurrences outside of these two countries, with other countries having a very low probability of seeing any landfalls.
 
 We then took our analysis one step further and examined expected landfall forecasts for each of our top ten countries and territories over the next five years (2025-2029).
 
@@ -305,7 +303,7 @@ While our Bayesian Poisson regression models provide valuable insights, several 
 \item
   Wide credible intervals in our five‑year forecasts reflect both variability and uncertainty in our forecasts.
 \item
-  Our models do not account for population density, infrastructure quality, or socioeconomic resilience, which influence actual humanitarian need. While countries like the United States may experience the highest number of landfalls, their relatively stronger economic resilience allows for stronger infrastructure and faster recovery. In contrast, economically weaker countries in the region may face catastrophic consequences from even a single cyclone landfall. These regions might benefit more and rely more heavily on humanitarian aid to reduce the impact of cyclone landfalls on vulnerable populations and infrastructure.
+  Our models do not account for population density, infrastructure quality, or socioeconomic resilience, which influence actual humanitarian need. While countries like the United States may experience the highest number of landfalls, their relatively stronger economic resilience allows for stronger infrastructure and faster recovery. In contrast, economically weaker countries in the region may face catastrophic consequences from even a single cyclone landfall. These regions might rely more heavily on humanitarian aid to reduce the impact of cyclone landfalls on vulnerable populations and infrastructure.
 \end{itemize}
 
 \section{Conclusion}\label{conclusion}
@@ -334,6 +332,8 @@ Ocegueda Sanchez, J.A., Chavas, D.R. \& Jones, J.J. (2025) Interannual variabili
 Truchelut, R.E., Klotzbach, P.J., Staehling, E.M., Wood, K.M., Halperin, D.J., Schreck, C.J. \& Blake, E.S. (2022) Earlier onset of {North} {Atlantic} hurricane season with warming oceans. \emph{Nature Communications}. 13 (1), 4646. doi:\href{https://doi.org/10.1038/s41467-022-31821-3}{10.1038/s41467-022-31821-3}.
 
 \end{CSLReferences}
+
+\newpage
 
 \section{Appendix - Technical description of analysis and data processing}\label{appendix---technical-description-of-analysis-and-data-processing}
 
