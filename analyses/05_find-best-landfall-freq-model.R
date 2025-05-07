@@ -42,8 +42,8 @@ logpoi_no_year_effect_model_fit_loo <- logpoi_no_year_effect_model_fit$loo()
 logpoi_hsgp_model_fit_loo <- logpoi_hsgp_model_fit$loo()
 
 # compare ELPD across models
-comp <- loo::loo_compare(list(no_year_effect = logpoi_no_year_effect_model_fit_loo, 
-                              hsgp = logpoi_hsgp_model_fit_loo))
+comp <- loo::loo_compare(list(Model_B = logpoi_no_year_effect_model_fit_loo, 
+                              Model_A = logpoi_hsgp_model_fit_loo))
 
 print(comp, simplify = FALSE)
 
@@ -54,7 +54,11 @@ print(comp, simplify = FALSE)
 comp_data <- as.data.frame(comp)
 
 # create table
-comp_table <- kbl(comp_data) %>%
+comp_table <- kbl(subset(comp_data, 
+                         select = c("elpd_diff", 
+                                    "se_diff", 
+                                    "elpd_loo", 
+                                    "se_elpd_loo"))) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"),
                 font_size = 16)
 
