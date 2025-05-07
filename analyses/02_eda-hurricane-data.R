@@ -188,7 +188,11 @@ p4 <- ggplot() +
   labs(x = "Longitude", 
        y = "Latitude", 
        color = "Wind Speed (knots)") +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        legend.title = element_text(size = 15),
+        legend.text = element_text(size = 12.5),
+        axis.text = element_text(size = 12), 
+        axis.title = element_text(size = 14))
 
 p4
 
