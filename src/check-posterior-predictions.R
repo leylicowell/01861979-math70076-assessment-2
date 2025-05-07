@@ -153,7 +153,12 @@ check_posterior_predictions <- function(model_fit,
          y = 'Number of landfalls', 
          colour = 'within\n95% posterior\nprediction\ninterval') +
     facet_grid(get(facet_col) ~ ., labeller = label_wrap_gen(10)) + 
-    theme_bw()
+    theme_bw()+
+    theme(axis.title = element_text(size = 18), 
+          axis.text.x = element_text(size = 16, angle = 45,vjust = 1,hjust = 1),
+          axis.text.y = element_text(size = 13),
+          legend.title = element_text(size = 15),
+          legend.text = element_text(size = 12.5))
   
   return(post_plot)
 }
