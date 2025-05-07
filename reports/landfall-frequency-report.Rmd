@@ -200,6 +200,7 @@ Both the Atlantic and Northeast and North Central Pacific hurricane databases (H
 - radius of maximum wind (in nautical miles).
 
 For the purpose of this report, the two databases were combined and the following features were extracted from cyclones in 2000 to 2024:
+
 - storm ID;
 - name, if available;
 - day;
@@ -249,7 +250,7 @@ Mathematically, our model is denoted:
 &\beta \sim \text{N}( 0, \frac{M}{M-1}( I - \frac{1}{M} \mathbf{1}\mathbf{1}^T) \cdot \sigma_{\beta}^2), \text{  (sum-to-zero constraint)}\\
 & f \sim \text{HSGP}(\alpha, \rho)\\
 &\sigma_{\beta} \sim \text{Half-Cauchy}(0,1)\\
-&\alpha \sim \text{Half-Cauchy}(0,1; b, m) \\
+&\alpha \sim \text{Half-Cauchy}(0,1) \\
 &\rho \sim \text{Inv-Gamma}(5,1)
 \end{align*}
 
@@ -258,11 +259,11 @@ where
 - $i$ indexes observations, $i=1,...,300$;
 - $M$ is the number of months, $M = 12$;
 - $Y_{i}$ is the observed count of landfalls for observation $i$;
-- $m(i)$ is a map from $i$ (the observations) to corresponding month ID (integers between $1$ and $12$);
+- $m(i)$ is a map from $i$ (the observations) to the corresponding month ID (integers between $1$ and $12$);
 - $T(i)$ is a map from $i$ (the observations) to the corresponding standardised year;
 - $\beta \in \mathbb{R}^{12}$ is the monthly seasonal effect, where $\beta_1$ is the effect for month 1 (January), $\beta_2$ is the effect for month 2 (February) and so on;
 - $f$ is given a zero-mean HSGP prior with squared exponential kernel with GP variance $\alpha$ and length scale $\rho$.  
-- $\sigma_{\beta}$ scales the variance of $\beta$ to implement non-centered parameterisation on top of the sum-to-zero constraint, where both constraints were implemented to improve parameter identifiability, sampling efficiency and convergence of our model parameters;
+- $\sigma_{\beta}$ scales the variance of $\beta$ to implement non-centered parameterisation on top of the sum-to-zero constraint, where both constraints are methods implemented to improve parameter identifiability, sampling efficiency and convergence of our model parameters;
 - $\lambda_{i}$ is the expected number of landfalls per month and year
 
 We ran our MCMC algorithm using 3 parallel Markov chains, 4000 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking trace plots for our worst performing parameter and looking at pairwise posterior geometries (thus allowing us to verify that all our parameters are identifiable).
@@ -305,7 +306,7 @@ where
 - $i$ indexes observations, $i=1,...,300$;
 - $M$ is the number of months, $M = 12$;
 - $Y_{i}$ is the observed count of landfalls for observation $i$;
-- $m(i)$ is a map from $i$ (the observations) to corresponding month ID (integers between $1$ and $12$);
+- $m(i)$ is a map from $i$ (the observations) to the corresponding month ID (integers between $1$ and $12$);
 - $\beta \in \mathbb{R}^{12}$ is the monthly seasonal effect, where $\beta_1$ is the effect for month 1 (January), $\beta_2$ is the effect for month 2 (February) and so on;
 - $\sigma_{\beta}$ scales the variance of $\beta$ to implement non-centered parameterisation on top of the sum-to-zero constraint, where both constraints were implemented to improve parameter identifiability, sampling efficiency and convergence of our model parameters;
 - $\lambda_{i}$ is the expected number of landfalls per month and year
@@ -334,7 +335,7 @@ We found that 95% of our observed landfall counts fell within our model's poster
 
 ## Model A and Model B Comparison
 
-To compare the predictive performance of our models A and B, we computed the expected log posterior predictive density (ELPD) using approximate Leave-One-Out (LOO) Cross Validation.
+To compare the predictive performance of our models A and B, we computed the expected log posterior predictive density (ELPD) using approximate Leave-One-Out (LOO) Cross Validation. This is a statistic commonly used in Bayesian statistics to measure how well a model predicts unseen data, where the model with higher ELPD value is preferred.
 
 ```{r figs13, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "LOO Cross Validation measures for comparative model performance.", out.width = "100%"}
 model_comparison <- here("outputs", "bayesian-analysis-landfall-freq", "best-model-comp.png")
@@ -344,10 +345,10 @@ knitr::include_graphics(model_comparison)
 
 Figure \@ref(fig:figs13) shows model performance comparison measures such as:
 
-- elpd_diff: Difference in expected log pointwise predictive density (ELPD) between models
+- elpd_diff: Difference in ELPD between models
 - se_diff: Standard error of the difference in ELPD
-- elpd_loo: ELPD for leave-one-out cross-validation
-- se_elpd_loo: Standard error of the ELPD for leave-one-out cross-validation
+- elpd_loo: ELPD value using LOO cross-validation
+- se_elpd_loo: Standard error of the ELPD for LOO cross-validation
 
 The difference in ELPD between Model B and Model A is approximately 3.73, as can be seen in Figure \@ref(fig:figs13), with a standard error of 3.00. This suggests that Model B has a slightly better predictive performance, but overall, both models behave similarly as this difference is marginal. For simplicity, we used Model B to forecast landfalls per month and year.
 
@@ -369,6 +370,7 @@ where
 
 - $i$ indexes observations, $i=1,...,250$;
 - $j$ indexes the countries or territories, $j = 1,...,10$;
+- $L$ is the number of countries/territories, $L=10$;
 - $Y_{i}$ is the observed count of landfalls for observation $i$;
 - $X$ is a $300 \times 10$ dimensional design matrix consisting of one-hot columns for each location;
 - $\beta_0$ is the baseline parameter;
