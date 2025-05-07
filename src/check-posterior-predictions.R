@@ -158,7 +158,8 @@ check_posterior_predictions <- function(model_fit,
           axis.text.x = element_text(size = 16, angle = 45,vjust = 1,hjust = 1),
           axis.text.y = element_text(size = 13),
           legend.title = element_text(size = 15),
-          legend.text = element_text(size = 12.5))
+          legend.text = element_text(size = 12.5),
+          strip.text = element_text(size = 9, face = "bold"))
   
   return(post_plot)
 }
