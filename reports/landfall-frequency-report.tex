@@ -36,7 +36,7 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=2cm]{geometry}
 \usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
@@ -193,7 +193,7 @@ We then took our analysis one step further and examined expected landfall foreca
 \caption{Forecasted number of landfalls per month, 2025-2029, based on the seasonal model.}\label{fig:figs3}
 \end{figure}
 
-Figure \ref{fig:figs3} displays the total forecasted number of cyclone landfalls per month from 2025 to 2029, showing the 2.5\% and 97.5\% quantiles and the median value of total landfalls for each month. These values serve as a measure of statistical uncertainty associated with our model. We expect the actual number of total landfalls over this five year period to fall between 2.5\% and 97.5\% quantile values with 95\% certainty.
+Figure \ref{fig:figs3} displays the total forecasted number of cyclone landfalls per month from 2025 to 2029, showing the 2.5\% and 97.5\% quantiles and the median value of total landfalls for each month. These values serve as a measure of statistical uncertainty associated with our model (the further apart they are, the more uncertainty there is). We expect the actual number of total landfalls over this five year period to fall between 2.5\% and 97.5\% quantile values with 95\% certainty.
 
 The forecast predicts the highest number of total landfalls in September, with a median value of 31 landfalls, followed closely by August and October, with median values of 24 and 22 landfalls, respectively. The months of January to April and December are forecasted to experience significantly fewer landfalls, with the median forecast for total landfalls being close to zero in these months.
 
@@ -238,14 +238,15 @@ We next took a closer look at landfall locations from 2000 to 2024 in order to i
 
 Figure \ref{fig:figs5} provides a national-level overview of landfall frequency in the last 25 years, with the United States, Mexico, Nicaragua, the Bahamas, Cuba and Canada standing out as the most impacted by cyclone activity, thus identifying countries with the highest exposure to cyclone landfalls. This is crucial for establishing which governments need the most support.
 
+\newpage
+
 Figure \ref{fig:figs6}, in contrast, provides a geographical overview of landfall locations since 2000, allowing us to identify which coastal regions are must vulnerable to cyclone activity. We see that the Gulf Coast and East Coast of the United States experience a high number of landfalls, whereas the Pacific coast of the United States hasn't seen any since 2000. On the other hand, both Mexico's East and West coasts have high landfall exposure. This map is particularly important for local disaster preparedness, showing which areas are most susceptible to damages caused by cyclone landfalls.
 
 To explore geographical patterns in cyclone landfalls, we fitted a Bayesian Poisson regression model to our landfall count data, now stratified by year and location. This model (model C) allowed us to assess country and territory-level vulnerability related to cyclone landfalls. Model C ignores yearly time trends based on the results of our previous time-based models (where we saw a better performance from our model without a year effect). Instead, model C incorporates country and territory-level effects for the top ten countries with the most landfalls since 2000: the United States of America, Mexico, Cuba, the Bahamas, Nicaragua, Canada, Belize, Dominican Republic, Antigua and Barbuda and Puerto Rico, as seen in Figure \ref{fig:figs5}.
 
-We then used model C to simulate landfall occurrences in 2025, for each of the countries and territories in our top ten list. Figure \ref{fig:figs7} clearly isolated the United States of America and Mexico as the most vulnerable regions in 2025, even amongst the top ten landfall-exposed countries. This figure reinforces the rarity of landfall occurrences outside of these two countries, with other countries having a very low probability of seeing any landfalls.
+We then used model C to simulate landfall occurrences in 2025, for each of the countries and territories in our top ten list.
 
 \newpage
-
 \begin{figure}
 
 {\centering \includegraphics[width=0.82\linewidth]{../outputs/bayesian-analysis-country-freq/landfall-per-country-density-plots} 
@@ -255,7 +256,9 @@ We then used model C to simulate landfall occurrences in 2025, for each of the c
 \caption{Estimated probability distribution of cyclone landfalls per country and territory in 2025.}\label{fig:figs7}
 \end{figure}
 
-We then took our analysis one step further and examined expected landfall forecasts for each of our top ten countries and territories over the next five years (2025-2029).
+Figure \ref{fig:figs7} clearly isolated the United States of America and Mexico as the most vulnerable regions in 2025, even amongst the top ten landfall-exposed countries. This figure reinforces the rarity of landfall occurrences outside of these two countries, with other countries having a very low probability of seeing any landfalls.
+
+We took our analysis one step further and examined expected landfall forecasts for each of our top ten countries and territories over the next five years (2025-2029).
 
 \begin{figure}
 
@@ -335,7 +338,7 @@ Truchelut, R.E., Klotzbach, P.J., Staehling, E.M., Wood, K.M., Halperin, D.J., S
 
 \newpage
 
-\section{Appendix - Technical description of analysis and data processing}\label{appendix---technical-description-of-analysis-and-data-processing}
+\section{Appendix - Technical description of models and data processing}\label{appendix---technical-description-of-models-and-data-processing}
 
 \subsection{Data processing}\label{data-processing}
 
