@@ -179,6 +179,8 @@ the nearest country.
 
 ## Methodology
 
+All MCMC algorithms were run using set.seed(42).
+
 We modeled the number of cyclone landfalls per month and year using Bayesian
 Poisson regression models and the **cmdstanr** package, in order to explore any seasonality effects and 
 yearly trends. Our first model, Model A, included both a monthly effect and a non-linear yearly effect,
