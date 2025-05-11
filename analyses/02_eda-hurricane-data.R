@@ -1,7 +1,5 @@
 # in this script, we perform an exploratory data analysis of our cyclone
 # track data from the HURDAT2 data set
-# we are interested in the number of cyclone landfalls per year
-# and any seasonality effects
 
 library(dplyr)
 library(magrittr)

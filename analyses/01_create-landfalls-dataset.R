@@ -1,5 +1,5 @@
-# in this script, we create a new data set of landfalls as well as the countries
-# where the landfalls occur
+# in this script, we create a new data set of landfalls as well as add the 
+# countries where the landfalls occur
 
 #===============================================================================
 # load packages
