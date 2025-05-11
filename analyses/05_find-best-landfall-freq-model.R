@@ -66,15 +66,15 @@ print(comp_table)
 
 # save table
 save_kable(comp_table, file = here("outputs", 
-                                       "bayesian-analysis-landfall-freq", 
+                                       "bayesian-analysis-monthly-freq", 
                                        "best-model-comp.html"))
 
 # use webshot to capture the html table as a pdf
 webshot(here("outputs", 
-             "bayesian-analysis-landfall-freq", 
+             "bayesian-analysis-monthly-freq", 
              "best-model-comp.html"), 
         here("outputs", 
-             "bayesian-analysis-landfall-freq", 
+             "bayesian-analysis-monthly-freq", 
              "best-model-comp.png"),
         selector = "table",
         zoom = 2)

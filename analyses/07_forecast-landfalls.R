@@ -216,36 +216,36 @@ monthly_forecast_25_plot
 
 
 save_kable(monthly_forecast_table, file = here("outputs", 
-                                               "bayesian-analysis-landfall-freq", 
+                                               "bayesian-analysis-monthly-freq", 
                                                "landfalls-monthly-forecasts.html"))
 
 # use webshot to capture the html table as a pdf
 webshot(here("outputs", 
-             "bayesian-analysis-landfall-freq", 
+             "bayesian-analysis-monthly-freq", 
              "landfalls-monthly-forecasts.html"), 
         here("outputs", 
-             "bayesian-analysis-landfall-freq", 
+             "bayesian-analysis-monthly-freq", 
              "landfalls-monthly-forecasts.png"),
         selector = "table",
         zoom = 2)
 
 save_kable(simple_monthly_forecast_table, file = here("outputs", 
-                                                      "bayesian-analysis-landfall-freq", 
+                                                      "bayesian-analysis-monthly-freq", 
                                                       "simple-landfalls-monthly-forecasts.html"))
 
 # use webshot to capture the html table as a pdf
 webshot(here("outputs", 
-             "bayesian-analysis-landfall-freq", 
+             "bayesian-analysis-monthly-freq", 
              "simple-landfalls-monthly-forecasts.html"), 
         here("outputs", 
-             "bayesian-analysis-landfall-freq", 
+             "bayesian-analysis-monthly-freq", 
              "simple-landfalls-monthly-forecasts.png"),
         selector = "table",
         zoom = 2)
 
 
 ggsave(here("outputs", 
-            "bayesian-analysis-landfall-freq", 
+            "bayesian-analysis-monthly-freq", 
             "landfall-monthly-density-plots.pdf"), 
        plot = monthly_forecast_25_plot,
        height = 10, 

@@ -266,17 +266,17 @@ model_diagnostics <- check_model_diagnostics(logpoi_hsgp_model_fit,
 model_diagnostics
 
 save_kable(model_diagnostics, file = here("outputs", 
-                           "bayesian-analysis-landfall-freq",
+                           "bayesian-analysis-monthly-freq",
                            "model-HSGP", 
                            "HSGP-model-diagnostics.html"))
 
 # use webshot to capture the html table as a pdf
 webshot(here("outputs", 
-             "bayesian-analysis-landfall-freq",
+             "bayesian-analysis-monthly-freq",
              "model-HSGP", 
              "HSGP-model-diagnostics.html"), 
         here("outputs",
-             "bayesian-analysis-landfall-freq",
+             "bayesian-analysis-monhtly-freq",
              "model-HSGP", 
              "HSGP-model-diagnostics.png"),
         selector = "table",
@@ -296,7 +296,7 @@ post_checks <- check_posterior_predictions(logpoi_hsgp_model_fit,
 post_checks 
 
 post_checks <- ggsave(here("outputs", 
-                  "bayesian-analysis-landfall-freq",
+                  "bayesian-analysis-monthly-freq",
                   "model-HSGP",
                   "HSGP-post-pred-checks.pdf"), 
             plot = post_checks, 
