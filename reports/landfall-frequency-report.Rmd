@@ -68,7 +68,7 @@ To explore yearly and monthly patterns in cyclone landfalls, we fitted two Bayes
 Model B was then used to simulate landfall occurrences in 2025, on a monthly basis, showing an expected peak in landfall activity between August and October.
 
 ```{r figs2, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Estimated probability distribution of cyclone landfalls per month in 2025, based on the seasonal model.", out.width = "82%"}
-landfalls_monthly_prob <- here("outputs", "bayesian-analysis-landfall-freq", "landfall-monthly-density-plots.pdf")
+landfalls_monthly_prob <- here("outputs", "bayesian-analysis-monthly-freq", "landfall-monthly-density-plots.pdf")
 
 knitr::include_graphics(landfalls_monthly_prob)
 ```
@@ -78,7 +78,7 @@ Figure \@ref(fig:figs2) shows a clear seasonal pattern in our landfall forecasts
 We then took our analysis one step further and examined expected landfall forecasts per month over the next five years (2025-2029).
 
 ```{r figs3, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Forecasted number of landfalls per month, 2025-2029, based on the seasonal model.", out.width = "100%"}
-landfalls_monthly_forecasts <- here("outputs", "bayesian-analysis-landfall-freq", "simple-landfalls-monthly-forecasts.png")
+landfalls_monthly_forecasts <- here("outputs", "bayesian-analysis-monthly-freq", "simple-landfalls-monthly-forecasts.png")
 
 knitr::include_graphics(landfalls_monthly_forecasts)
 ```
@@ -273,7 +273,7 @@ where
 We ran our MCMC algorithm using 3 parallel Markov chains, 4000 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking trace plots for our worst performing parameter and looking at pairwise posterior geometries (thus allowing us to verify that all our parameters are identifiable).
 
 ```{r figs9, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Model convergence diagnostics for our 5 worst performing parameters.", out.width = "100%"}
-diagnostics <- here("outputs", "bayesian-analysis-landfall-freq", "model-HSGP", "HSGP-model-diagnostics.png")
+diagnostics <- here("outputs", "bayesian-analysis-monthly-freq", "model-HSGP", "HSGP-model-diagnostics.png")
 
 knitr::include_graphics(diagnostics)
 ```
@@ -283,7 +283,7 @@ Figure \@ref(fig:figs9) displays 3 statistical efficiency and convergence measur
 We then checked model fit by performing a posterior predictive check (we simulate data from our model’s posterior distribution and compare these to the actual observed data to see if our model explains the data well). To verify model fit, we calculated the probability that an observed data point lies in the 95% credible interval of the corresponding posterior distribution.
 
 ```{r figs10, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "95% posterior credible intervals and observed data for each month and year, 2000-2024.", out.width = "100%"}
-post_checks <- here("outputs", "bayesian-analysis-landfall-freq", "model-HSGP", "HSGP-post-pred-checks.pdf")
+post_checks <- here("outputs", "bayesian-analysis-monthly-freq", "model-HSGP", "HSGP-post-pred-checks.pdf")
 
 knitr::include_graphics(post_checks)
 ```
@@ -318,7 +318,7 @@ where
 Similarly to model A, we ran our MCMC algorithm using 3 parallel Markov chains, 4000 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking the trace plot for our worst performing parameter and looking at pairwise posterior geometries (allowing us to verify that all our parameters are identifiable).
 
 ```{r figs11, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Model convergence diagnostics for our 5 worst performing parameters.", out.width = "100%"}
-diagnostics <- here("outputs", "bayesian-analysis-landfall-freq", "model-no-year-effect", "no-year-model-diagnostics.png")
+diagnostics <- here("outputs", "bayesian-analysis-monthly-freq", "model-no-year-effect", "no-year-model-diagnostics.png")
 
 knitr::include_graphics(diagnostics)
 ```
@@ -328,7 +328,7 @@ Figure \@ref(fig:figs11) displays the 3 statistical efficiency and convergence m
 We then checked model fit by performing a posterior predictive check, similarly to Model A. 
 
 ```{r figs12, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "95% posterior credible intervals and observed data for each month and year, 2000-2024.", out.width = "100%"}
-post_checks <- here("outputs", "bayesian-analysis-landfall-freq", "model-no-year-effect", "no-year-post-pred-checks.pdf")
+post_checks <- here("outputs", "bayesian-analysis-monthly-freq", "model-no-year-effect", "no-year-post-pred-checks.pdf")
 
 knitr::include_graphics(post_checks)
 ```
@@ -342,7 +342,7 @@ We found that 95% of our observed landfall counts fell within our model's poster
 To compare the predictive performance of our models A and B, we computed the expected log posterior predictive density (ELPD) using approximate Leave-One-Out (LOO) Cross Validation. This is a statistic commonly used in Bayesian statistics to measure how well a model predicts unseen data, where the model with higher ELPD value is preferred.
 
 ```{r figs13, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "LOO Cross Validation measures for comparative model performance.", out.width = "100%"}
-model_comparison <- here("outputs", "bayesian-analysis-landfall-freq", "best-model-comp.png")
+model_comparison <- here("outputs", "bayesian-analysis-monthly-freq", "best-model-comp.png")
 
 knitr::include_graphics(model_comparison)
 ```
