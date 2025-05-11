@@ -155,12 +155,6 @@ qs::qsave(x = logpoi_no_year_effect_model_fit,
                                 "logpoi_no_year_effect_model_fit.qs")))
 
 
-#logpoi_no_year_effect_model_fit$save_object(file = file.path(
- # here("outputs", 
-       #"stan-models", 
-      # "no-year-effect-model-cmdstanr.rds")))
-
-
 #-------------------------------------------------------------------------------
 # check mixing and convergence
 #-------------------------------------------------------------------------------

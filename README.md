@@ -130,6 +130,7 @@ This project is developed in R and requires the installation of the packages lis
 - cmdstanr 
 - webshot2
 - loo
+- qs
 
 For Stan and cmdstanr installation, please refer to the following link:
 

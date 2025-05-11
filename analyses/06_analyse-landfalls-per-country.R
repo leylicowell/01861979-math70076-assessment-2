@@ -229,11 +229,6 @@ qs::qsave(x = logpoi_country_model_fit,
                                 "stan-models", 
                                 "logpoi_country_model_fit.qs")))
 
-# save output to RDS
-#logpoi_country_model_fit$save_object(file = file.path(here("outputs",
-                                                           # "stan-models", 
-                                                           # "country-model-cmdstanr.rds")))
-
 #-------------------------------------------------------------------------------
 # check mixing and convergence of model parameters
 #-------------------------------------------------------------------------------

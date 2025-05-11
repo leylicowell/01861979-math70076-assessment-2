@@ -255,11 +255,6 @@ qs::qsave(x = logpoi_hsgp_model_fit,
                                 "stan-models", 
                                 "logpoi_hsgp_model_fit.qs")))
 
-# save output to RDS
-#logpoi_hsgp_model_fit$save_object(file = file.path(here("outputs", 
-                                                       # "stan-models", 
-                                                       # "hsgp-model-cmdstanr.rds")))
-
 #-------------------------------------------------------------------------------
 # check mixing and convergence
 #-------------------------------------------------------------------------------
