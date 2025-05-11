@@ -81,22 +81,15 @@ by the files in the *analyses/* folder (in increasing numerical order, 00 to 07)
 │   │   ├── landfalls-per-year.pdf
 │   │   └── nbr-cyclone-landfalls.pdf
 │   └── stan-models
-│       ├── country-model-cmdstanr.rds
-│       ├── hsgp-model-cmdstanr.rds
-│       ├── model_19923362a52f46d4c2c225083ab891bf
-│       ├── model_19923362a52f46d4c2c225083ab891bf.stan
-│       ├── model_59891ce15e0ed7c11692029e3b681abd.stan
-│       ├── model_6652b09b8928d3e5214f509e7780b627
-│       ├── model_6652b09b8928d3e5214f509e7780b627.stan
-│       ├── model_8594d4def8fb7faea2aac6bfce509198
-│       ├── model_8594d4def8fb7faea2aac6bfce509198.stan
-│       ├── model_cb326800f9c69b887ad71221288b89a0
+│       ├── logpoi_hsgp_model_fit.qs
 │       ├── model_cb326800f9c69b887ad71221288b89a0.stan
-│       ├── model_d9a2196c112e560002299851d393c465
-│       ├── model_d9a2196c112e560002299851d393c465.stan
 │       ├── model_dfbc62b3c4e43050cf00e271d4496af2
+│       ├── logpoi_no_year_effect_model_fit.qs
 │       ├── model_dfbc62b3c4e43050cf00e271d4496af2.stan
-│       └── no-year-effect-model-cmdstanr.rds
+│       ├── model_cb326800f9c69b887ad71221288b89a0
+│       ├── logpoi_country_model_fit.qs
+│       ├── model_8594d4def8fb7faea2aac6bfce509198.stan
+│       └── model_8594d4def8fb7faea2aac6bfce509198
 └── reports
     ├── harvard-imperial-college-london.csl
     ├── landfall-frequency-report.aux
