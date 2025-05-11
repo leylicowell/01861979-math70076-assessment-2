@@ -363,87 +363,18 @@ display: none;
 <p>This project presents an <a href="reports/landfall-frequency-report.pdf">in-depth report</a>
 analysing tropical cyclone landfall patterns across the American
 continent. Our analysis uses Bayesian Poisson regression models and
-cyclone track data from 2000 to 2024. Our research focuses on the
-Atlantic and Eastern Pacific basins, explores historical landfall
-frequency over the studied period and forecasts landfall occurrences per
-month and per country/territory over the next five years (2025 to 2029).
-The aim of our analysis is to quantify seasonal patterns, identify any
-yearly trends in landfall activity and determine the most vulnerable
-countries and territories to cyclone landfalls.</p>
-</div>
-<div id="data" class="section level2">
-<h2>Data</h2>
-<div id="data-source" class="section level3">
-<h3>Data Source</h3>
-<p>We based our analysis on the Atlantic hurricane database (HURDAT2),
-1851-2024, more recently updated on April 4th, 2025 to include the 2024
-hurricane season, as well as the Northeast and North Central Pacific
-hurricane database (HURDAT2), 1949-2024, most recently updated on March
-17, 2025 to include the 2024 hurricane season. These data sets are
-provided by the <a href="https://www.nhc.noaa.gov/data/">National
-Hurricane Center (NHC)</a>, as part of the National Oceanic and
-Atmospheric Administration (NOAA).</p>
-</div>
-<div id="data-description" class="section level3">
-<h3>Data Description</h3>
-<p>Both databases contain records of cyclone coordinates, maximum winds,
-central pressure, system status at 6 hour intervals, as well as
-additional records outside of these standard intervals if a cyclone
-makes landfall, unexpectedly changes status, intensity or reaches a peak
-in terms of wind speed or pressure. The NHC provides detailed
-documentation of the <a href="https://www.nhc.noaa.gov/data/hurdat/hurdat2-format-atl-1851-2021.pdf">structure
-of the HURDAT2 databases</a>, including examples and terminology.</p>
-<p>For the purpose of this report, the two databases were combined and
-the following features were extracted from cyclones in 2000 to 2024:</p>
-<ul>
-<li>storm ID;</li>
-<li>name, if available;</li>
-<li>day;</li>
-<li>month;</li>
-<li>year;</li>
-<li>time;</li>
-<li>record identifier;</li>
-<li>cyclone position (measured in latitude and longitude, converted to
-positive and negative decimals);</li>
-<li>system status;</li>
-<li>maximum sustained wind (in knots, converted to integers);</li>
-<li>minimum pressure (in millibars, converted to integers).</li>
-</ul>
-<p>This data set was then used to identify all landfall events in the
-studied period, using the record identifier “L”. We then combined the
-landfall data with geographical data, containing country outlines and
-coordinates (acquired using the sf and rnaturalearth packages). In cases
-where landfall coordinates did not fall within a country or territory
-boundary, we mapped them to the nearest country.</p>
-</div>
-</div>
-<div id="methodology" class="section level2">
-<h2>Methodology</h2>
-<p>We modeled the number of cyclone landfalls per month and year using
-Bayesian Poisson regression models, in order to explore any seasonality
-effects and yearly trends. Our first model, Model A, included both a
-monthly effect and a non-linear yearly effect, due to the high
-fluctuations in cyclone landfall numbers per year. Our second model,
-Model B, only included the monthly effect, ignoring any long-term
-trends. We then used Leave-One-Out Cross Validation (LOO) to select the
-model with the best performance.</p>
-<p>Our final model, Model C, then investigated where cyclones were most
-likely to land, amongst the top 10 countries and territories which have
-experienced the most cyclone landfalls since 2000. These include Antigua
-and Barbuda, the Bahamas, Belize, Canada, Cuba, the Dominican Republic,
-Mexico, Nicaragua, Puerto Rico and the United States of America.</p>
-<p>Using our best performing time-based and geographical models, we then
-simulated landfall counts for each month as well as for each of the ten
-most affected countries and territories over the next five years (2025
-to 2029).</p>
+cyclone track data from 2000 to 2024. We explore and forecast landfall
+frequency per month and year, and per country/territory from 2000-2029.
+Intended users include humanitarian aid organisations and government
+policy makers.</p>
 </div>
 <div id="project-structure" class="section level2">
 <h2>Project Structure</h2>
 <p>This Project contains 6 main folders, each containing sub directories
 and files of their own. To ensure code scripts run smoothly, it is
-crucial to run the code files in the src folder first, followed by the
-files in the analyses folder (in increasing numerical order, 00 to
-07).</p>
+crucial to run the code files in the <em>src/</em> folder first,
+followed by the files in the <em>analyses/</em> folder (in increasing
+numerical order, 00 to 07).</p>
 <pre><code>├── 01861979-math70076-assessment-2.Rproj 
 ├── README.md
 ├── LICENSE.md
@@ -562,6 +493,74 @@ link:</p>
 <ul>
 <li><a href="https://mc-stan.org/cmdstanr/" class="uri">https://mc-stan.org/cmdstanr/</a></li>
 </ul>
+</div>
+<div id="methodology" class="section level2">
+<h2>Methodology</h2>
+<p>We modeled the number of cyclone landfalls per month and year using
+Bayesian Poisson regression models and the <strong>cmdstanr</strong>
+package, in order to explore any seasonality effects and yearly trends.
+Our first model, Model A, included both a monthly effect and a
+non-linear yearly effect, due to the high fluctuations in cyclone
+landfall numbers per year. Our second model, Model B, only included the
+monthly effect, ignoring any long-term trends. We then used
+Leave-One-Out Cross Validation (LOO) to select the model with the best
+performance.</p>
+<p>Our final model, Model C, then investigated where cyclones were most
+likely to land, amongst the top 10 countries and territories which have
+experienced the most cyclone landfalls since 2000. These include Antigua
+and Barbuda, the Bahamas, Belize, Canada, Cuba, the Dominican Republic,
+Mexico, Nicaragua, Puerto Rico and the United States of America.</p>
+<p>Using our best performing time-based and geographical models, we then
+simulated landfall counts for each month as well as for each of the ten
+most affected countries and territories over the next five years (2025
+to 2029).</p>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<div id="data-source" class="section level3">
+<h3>Data Source</h3>
+<p>We based our analysis on the Atlantic hurricane database (HURDAT2),
+1851-2024, more recently updated on April 4th, 2025 to include the 2024
+hurricane season, as well as the Northeast and North Central Pacific
+hurricane database (HURDAT2), 1949-2024, most recently updated on March
+17, 2025 to include the 2024 hurricane season. These data sets are
+provided by the <a href="https://www.nhc.noaa.gov/data/">National
+Hurricane Center (NHC)</a>, as part of the National Oceanic and
+Atmospheric Administration (NOAA).</p>
+</div>
+<div id="data-description" class="section level3">
+<h3>Data Description</h3>
+<p>Both databases contain records of cyclone coordinates, maximum winds,
+central pressure, system status at 6 hour intervals, as well as
+additional records outside of these standard intervals if a cyclone
+makes landfall, unexpectedly changes status, intensity or reaches a peak
+in terms of wind speed or pressure. The NHC provides detailed
+documentation of the <a href="https://www.nhc.noaa.gov/data/hurdat/hurdat2-format-atl-1851-2021.pdf">structure
+of the HURDAT2 databases</a>, including examples and terminology.</p>
+<p>For the purpose of this report, the two databases were combined and
+the following features were extracted from cyclones in 2000 to 2024:</p>
+<ul>
+<li>storm ID;</li>
+<li>name, if available;</li>
+<li>day;</li>
+<li>month;</li>
+<li>year;</li>
+<li>time;</li>
+<li>record identifier;</li>
+<li>cyclone position (measured in latitude and longitude, converted to
+positive and negative decimals);</li>
+<li>system status;</li>
+<li>maximum sustained wind (in knots, converted to integers);</li>
+<li>minimum pressure (in millibars, converted to integers).</li>
+</ul>
+<p>This data set was then used to identify all landfall events in the
+studied period, using the record identifier “L”. We then combined the
+landfall data with geographical data, containing country outlines and
+coordinates (acquired using the <strong>sf</strong> and
+<strong>rnaturalearth</strong> packages). In cases where landfall
+coordinates did not fall within a country or territory boundary, we
+mapped them to the nearest country.</p>
+</div>
 </div>
 <div id="areas-for-project-extension-and-development" class="section level2">
 <h2>Areas for Project Extension and Development</h2>
