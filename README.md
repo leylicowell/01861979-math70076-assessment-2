@@ -107,27 +107,6 @@ by the files in the *analyses/* folder (in increasing numerical order, 00 to 07)
 
 ```
 
-## Methodology
-
-We modeled the number of cyclone landfalls per month and year using Bayesian
-Poisson regression models, in order to explore any seasonality effects and 
-yearly trends. Our first model, Model A, included both a monthly effect and a non-linear yearly effect,
-due to the high fluctuations in cyclone landfall numbers per year. Our second model, Model B, 
-only included the monthly effect, ignoring any long-term trends. 
-We then used Leave-One-Out Cross Validation (LOO) to
-select the model with the best performance. 
-
-Our final model, Model C, then investigated where cyclones were most likely to land, amongst the top 
-10 countries and territories which have experienced the most cyclone landfalls since
-2000. These include Antigua and Barbuda, the Bahamas, Belize, Canada, Cuba, 
-the Dominican Republic, Mexico, Nicaragua, Puerto Rico and the United States of 
-America.
-
-Using our best performing time-based and geographical models, 
-we then simulated landfall counts for each month as well as for each of the ten most 
-affected countries and territories over the next five years (2025 to 2029). 
-
-
 ## Packages and Dependencies
 
 This project is developed in R and requires the installation of the packages listed below:
@@ -155,6 +134,27 @@ This project is developed in R and requires the installation of the packages lis
 For Stan and cmdstanr installation, please refer to the following link:
 
 - https://mc-stan.org/cmdstanr/
+
+## Methodology
+
+We modeled the number of cyclone landfalls per month and year using Bayesian
+Poisson regression models and the **cmdstanr package**, in order to explore any seasonality effects and 
+yearly trends. Our first model, Model A, included both a monthly effect and a non-linear yearly effect,
+due to the high fluctuations in cyclone landfall numbers per year. Our second model, Model B, 
+only included the monthly effect, ignoring any long-term trends. 
+We then used Leave-One-Out Cross Validation (LOO) to
+select the model with the best performance. 
+
+Our final model, Model C, then investigated where cyclones were most likely to land, amongst the top 
+10 countries and territories which have experienced the most cyclone landfalls since
+2000. These include Antigua and Barbuda, the Bahamas, Belize, Canada, Cuba, 
+the Dominican Republic, Mexico, Nicaragua, Puerto Rico and the United States of 
+America.
+
+Using our best performing time-based and geographical models, 
+we then simulated landfall counts for each month as well as for each of the ten most 
+affected countries and territories over the next five years (2025 to 2029). 
+
 
 ## Data
 
@@ -193,7 +193,7 @@ features were extracted from cyclones in 2000 to 2024:
 
 This data set was then used to identify all landfall events in the studied period, 
 using the record identifier "L". We then combined the landfall data with geographical data, 
-containing country outlines and coordinates (acquired using the sf and rnaturalearth packages).
+containing country outlines and coordinates (acquired using the **sf** and **rnaturalearth** packages).
 In cases where landfall coordinates did not fall within a country or territory boundary, we mapped them to 
 the nearest country. 
 
