@@ -270,7 +270,7 @@ where
 - $\sigma_{\beta}$ scales the variance of $\beta$ to implement non-centered parameterisation on top of the sum-to-zero constraint, where both constraints are methods implemented to improve parameter identifiability, sampling efficiency and convergence of our model parameters;
 - $\lambda_{i}$ is the expected number of landfalls per month and year
 
-We ran our MCMC algorithm using 3 parallel Markov chains, 4000 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking trace plots for our worst performing parameter and looking at pairwise posterior geometries (thus allowing us to verify that all our parameters are identifiable).
+We ran our MCMC algorithm using 3 parallel Markov chains, 3500 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking trace plots for our worst performing parameter and looking at pairwise posterior geometries (thus allowing us to verify that all our parameters are identifiable).
 
 ```{r figs9, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Model convergence diagnostics for our 5 worst performing parameters.", out.width = "100%"}
 diagnostics <- here("outputs", "bayesian-analysis-monthly-freq", "model-HSGP", "HSGP-model-diagnostics.png")
@@ -315,7 +315,7 @@ where
 - $\sigma_{\beta}$ scales the variance of $\beta$ to implement non-centered parameterisation on top of the sum-to-zero constraint, where both constraints were implemented to improve parameter identifiability, sampling efficiency and convergence of our model parameters;
 - $\lambda_{i}$ is the expected number of landfalls per month and year
 
-Similarly to model A, we ran our MCMC algorithm using 3 parallel Markov chains, 4000 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking the trace plot for our worst performing parameter and looking at pairwise posterior geometries (allowing us to verify that all our parameters are identifiable).
+Similarly to model A, we ran our MCMC algorithm using 3 parallel Markov chains, 3500 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking the trace plot for our worst performing parameter and looking at pairwise posterior geometries (allowing us to verify that all our parameters are identifiable).
 
 ```{r figs11, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Model convergence diagnostics for our 5 worst performing parameters.", out.width = "100%"}
 diagnostics <- here("outputs", "bayesian-analysis-monthly-freq", "model-no-year-effect", "no-year-model-diagnostics.png")
@@ -354,7 +354,7 @@ Figure \@ref(fig:figs13) shows model performance comparison measures such as:
 - elpd_loo: ELPD value using LOO cross-validation
 - se_elpd_loo: Standard error of the ELPD for LOO cross-validation
 
-The difference in ELPD between Model B and Model A is approximately 3.75, as can be seen in Figure \@ref(fig:figs13), with a standard error of 3.00. This suggests that Model B has a slightly better predictive performance, but overall, both models behave similarly as this difference is marginal. For simplicity, we used Model B to forecast landfalls per month and year.
+The difference in ELPD between Model B and Model A is approximately 3.88, as can be seen in Figure \@ref(fig:figs13), with a standard error of 2.97. This suggests that Model B has a slightly better predictive performance, but overall, both models behave similarly as this difference is marginal. For simplicity, we used Model B to forecast landfalls per month and year.
 
 ## Model C: Geographical model
 
@@ -382,7 +382,7 @@ where
 - $\lambda_{i}$ is the expected number of landfalls per month and year
 
 
-We ran our MCMC algorithm using 3 parallel Markov chains, 6000 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking the trace plot for our worst performing parameter and looking at pairwise posterior geometries.
+We ran our MCMC algorithm using 3 parallel Markov chains, 4000 iterations, discarding the first 500 as "warm-up" iterations. We verified model convergence by investigating key model parameter convergence diagnostics, as well as checking the trace plot for our worst performing parameter and looking at pairwise posterior geometries.
 
 ```{r figs14, echo=FALSE, fig.align='center', fig.show='hold', fig.cap = "Model convergence diagnostics for our 5 worst performing parameters.", out.width = "100%"}
 diagnostics <- here("outputs", "bayesian-analysis-country-freq", "country-model-diagnostics.png")

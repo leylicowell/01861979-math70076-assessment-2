@@ -213,7 +213,7 @@ logpoi_country_model_fit <- logpoi_country_model_compiled$sample(
   chains = 3,
   parallel_chains = 3,
   iter_warmup = 500,
-  iter_sampling = 6e3,
+  iter_sampling = 4e3,
   refresh = 500,
   save_warmup = TRUE)
 

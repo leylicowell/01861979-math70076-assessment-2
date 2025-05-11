@@ -239,7 +239,7 @@ logpoi_hsgp_model_fit <- logpoi_hsgp_model_compiled$sample(
   chains = 3,
   parallel_chains = 3,
   iter_warmup = 500,
-  iter_sampling = 4e3,
+  iter_sampling = 3500,
   refresh = 500,
   save_warmup = TRUE)
 
