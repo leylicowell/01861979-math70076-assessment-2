@@ -14,8 +14,8 @@ Intended users include humanitarian aid organisations and government policy make
 ## Project Structure
 
 This Project contains 6 main folders, each containing sub directories and files of their own.
-To ensure code scripts run smoothly, it is crucial to run the code files in the **src/** folder first, followed
-by the files in the **analyses/** folder (in increasing numerical order, 00 to 07).
+To ensure code scripts run smoothly, it is crucial to run the code files in the *src/* folder first, followed
+by the files in the *analyses/* folder (in increasing numerical order, 00 to 07).
 
 ```
 ├── 01861979-math70076-assessment-2.Rproj 
