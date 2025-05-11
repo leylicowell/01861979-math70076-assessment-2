@@ -17,18 +17,26 @@ library(dplyr)
 library(magrittr)
 library(tidyr)
 library(loo)
+library(qs)
 
 #===============================================================================
 # load model fits and data
 #===============================================================================
 
-logpoi_hsgp_model_fit <- readRDS(file = file.path(here("outputs", 
-                                                       "stan-models", 
-                                                       "hsgp-model-cmdstanr.rds")))
+#logpoi_hsgp_model_fit <- readRDS(file = file.path(here("outputs", 
+                                                      # "stan-models", 
+#"hsgp-model-cmdstanr.rds")))
 
-logpoi_no_year_effect_model_fit <- readRDS(file = file.path(here("outputs", 
-                                                          "stan-models", 
-                                                          "no-year-effect-model-cmdstanr.rds")))
+logpoi_hsgp_model_fit <- qs::qread(file.path(here("outputs", 
+                                                  "stan-models", 
+                                                  "logpoi_hsgp_model_fit.qs")))
+
+logpoi_no_year_effect_model_fit <- qs::qread(file.path(here("outputs", 
+                                                  "stan-models", 
+                                                  "logpoi_no_year_effect_model_fit.qs")))
+#logpoi_no_year_effect_model_fit <- readRDS(file = file.path(here("outputs", 
+                                                         # "stan-models", 
+                                                         # "no-year-effect-model-cmdstanr.rds")))
 
 landfalls_monthly <- as.data.table(read.csv(here("data", 
                                          "derived", 

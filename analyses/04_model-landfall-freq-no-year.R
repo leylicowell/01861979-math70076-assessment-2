@@ -142,11 +142,23 @@ logpoi_no_year_effect_model_fit <- logpoi_no_year_effect_model_compiled$sample(
   refresh = 500,
   save_warmup = TRUE)
 
-# save output to RDS
-logpoi_no_year_effect_model_fit$save_object(file = file.path(
-  here("outputs", 
-       "stan-models", 
-       "no-year-effect-model-cmdstanr.rds")))
+# load CmdStan output files into the fitted model object using qs to reduce file size
+logpoi_no_year_effect_model_fit$draws() # load posterior draws into the object.
+try(logpoi_no_year_effect_model_fit$sampler_diagnostics(), silent = TRUE) # load sampler diagnostics.
+try(logpoi_no_year_effect_model_fit$init(), silent = TRUE) # load user-defined initial values.
+try(logpoi_no_year_effect_model_fit$profiles(), silent = TRUE) # load profiling samples.
+
+# save the object
+qs::qsave(x = logpoi_no_year_effect_model_fit, 
+          file = file.path(here("outputs", 
+                                "stan-models", 
+                                "logpoi_no_year_effect_model_fit.qs")))
+
+
+#logpoi_no_year_effect_model_fit$save_object(file = file.path(
+ # here("outputs", 
+       #"stan-models", 
+      # "no-year-effect-model-cmdstanr.rds")))
 
 
 #-------------------------------------------------------------------------------

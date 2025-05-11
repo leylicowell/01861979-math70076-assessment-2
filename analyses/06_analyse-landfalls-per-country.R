@@ -217,10 +217,22 @@ logpoi_country_model_fit <- logpoi_country_model_compiled$sample(
   refresh = 500,
   save_warmup = TRUE)
 
+# load CmdStan output files into the fitted model object using qs to reduce file size
+logpoi_country_model_fit$draws() # load posterior draws into the object.
+try(logpoi_country_model_fit$sampler_diagnostics(), silent = TRUE) # load sampler diagnostics.
+try(logpoi_country_model_fit$init(), silent = TRUE) # load user-defined initial values.
+try(logpoi_country_model_fit$profiles(), silent = TRUE) # load profiling samples.
+
+# save the object
+qs::qsave(x = logpoi_country_model_fit, 
+          file = file.path(here("outputs", 
+                                "stan-models", 
+                                "logpoi_country_model_fit.qs")))
+
 # save output to RDS
-logpoi_country_model_fit$save_object(file = file.path(here("outputs",
-                                                           "stan-models", 
-                                                           "country-model-cmdstanr.rds")))
+#logpoi_country_model_fit$save_object(file = file.path(here("outputs",
+                                                           # "stan-models", 
+                                                           # "country-model-cmdstanr.rds")))
 
 #-------------------------------------------------------------------------------
 # check mixing and convergence of model parameters
