@@ -37,7 +37,7 @@ Our analysis therefore focuses on landfall trends from 2000 to 2024, thus ensuri
 
 Once we collected our data, we combined our landfall coordinates  with geographical data, containing country outlines and coordinates, to determine where each landfalling cyclone crossed a coastline. We say a cyclone makes landfall when the center of the system crosses a coastline. This center, however, usually ranges from 32 to 64km and therefore, certain landfall coordinates did not point to any land. In these cases, we mapped the landfall data points to the nearest country. We also note that certain cyclones make more than one landfall, however for the purpose of this report, our analysis focuses solely on the number of landfalls.
 
-We first modeled the number of cyclone landfalls per month and year using Bayesian Poisson regression models [@Elsner], in order to explore any seasonality effects and yearly trends. Model A, included both a monthly effect and a non-linear yearly effect, due to the high fluctuations in cyclone landfall numbers per year. Model B, only included the monthly effect, ignoring any long-term trends. We then used a statistical method called Leave-One-Out Cross Validation (LOO) to select the model with the best performance, in this case, our second model. 
+We first modeled the number of cyclone landfalls per month and year using Bayesian Poisson regression models [@Elsner], in order to explore any seasonality effects and yearly trends. Model A included both a monthly effect and a non-linear yearly effect, due to the high fluctuations in cyclone landfall numbers per year. Model B only included the monthly effect, ignoring any long-term trends. We then used a statistical method called Leave-One-Out Cross Validation (LOO) to select the model with the best performance, in this case, Model B. 
 
 Model C then investigated where cyclones were most likely to land, amongst the top 10 countries and territories which have experienced the most cyclone landfalls since 2000. These include Antigua and Barbuda, the Bahamas, Belize, Canada, Cuba, the Dominican Republic, Mexico, Nicaragua, Puerto Rico and the United States of America.
 
@@ -149,7 +149,7 @@ knitr::include_graphics(country_forecasts)
 
 Figure \@ref(fig:figs8) displays the total forecasted number of cyclone landfalls per country and territory from 2025 to 2029, showing the 2.5% and 97.5% quantiles and the median value of total landfalls for each month. 
 
-The forecast predicts the highest number of total landfalls in the United States of America, followed closely by Mexico , with median values of 30 and 29 landfalls, respectively. Puerto Rico, the Dominican Republic and Antigua and Barbuda have the lowest forecasted landfalls, with a median value of total landfalls over the next 5 years close to zero, despite being in the top ten most exposed countries and territories. 
+The forecast predicts the highest number of total landfalls in the United States of America, followed closely by Mexico , with median values of 30 and 28 landfalls, respectively. Puerto Rico, the Dominican Republic and Antigua and Barbuda have the lowest forecasted landfalls, with a median value of total landfalls over the next 5 years close to zero, despite being in the top ten most exposed countries and territories. 
 
 Our forecasts once again highlight the unpredictability of cyclone landfalls, with considerable spread between the 2.5% and 97.5% quantiles for some of our countries and territories such as the United States of America, Mexico, the Bahamas and Cuba. The wide range of uncertainty in our forecasts for these countries once again underlines the importance of continued research into cyclone activity as to refine and improve model predictions.
 
@@ -354,7 +354,7 @@ Figure \@ref(fig:figs13) shows model performance comparison measures such as:
 - elpd_loo: ELPD value using LOO cross-validation
 - se_elpd_loo: Standard error of the ELPD for LOO cross-validation
 
-The difference in ELPD between Model B and Model A is approximately 3.73, as can be seen in Figure \@ref(fig:figs13), with a standard error of 3.00. This suggests that Model B has a slightly better predictive performance, but overall, both models behave similarly as this difference is marginal. For simplicity, we used Model B to forecast landfalls per month and year.
+The difference in ELPD between Model B and Model A is approximately 3.75, as can be seen in Figure \@ref(fig:figs13), with a standard error of 3.00. This suggests that Model B has a slightly better predictive performance, but overall, both models behave similarly as this difference is marginal. For simplicity, we used Model B to forecast landfalls per month and year.
 
 ## Model C: Geographical model
 
@@ -373,10 +373,9 @@ Mathematically, our model is denoted:
 where
 
 - $i$ indexes observations, $i=1,...,250$;
-- $j$ indexes the countries or territories, $j = 1,...,10$;
 - $L$ is the number of countries/territories, $L=10$;
 - $Y_{i}$ is the observed count of landfalls for observation $i$;
-- $X$ is a $300 \times 10$ dimensional design matrix consisting of one-hot columns for each location;
+- $X$ is a $250 \times 10$ dimensional design matrix consisting of one-hot columns for each location;
 - $\beta_0$ is the baseline parameter;
 - $\beta \in \mathbb{R}^{10}$ is the monthly seasonal effect, where $\beta_1$ is the effect for country/location 1, $\beta_2$ is the effect for country/territory 2 and so on;
 - $\sigma_{\beta}$ scales the variance of $\beta$ to implement non-centered parameterisation on top of the sum-to-zero constraint, where both constraints were implemented to improve parameter identifiability, sampling efficiency and convergence of our model parameters;

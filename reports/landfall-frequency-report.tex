@@ -142,7 +142,7 @@ Our analysis therefore focuses on landfall trends from 2000 to 2024, thus ensuri
 
 Once we collected our data, we combined our landfall coordinates with geographical data, containing country outlines and coordinates, to determine where each landfalling cyclone crossed a coastline. We say a cyclone makes landfall when the center of the system crosses a coastline. This center, however, usually ranges from 32 to 64km and therefore, certain landfall coordinates did not point to any land. In these cases, we mapped the landfall data points to the nearest country. We also note that certain cyclones make more than one landfall, however for the purpose of this report, our analysis focuses solely on the number of landfalls.
 
-We first modeled the number of cyclone landfalls per month and year using Bayesian Poisson regression models (\citeproc{ref-Elsner}{Elsner, Bossak \& Niu, 2001}), in order to explore any seasonality effects and yearly trends. Model A, included both a monthly effect and a non-linear yearly effect, due to the high fluctuations in cyclone landfall numbers per year. Model B, only included the monthly effect, ignoring any long-term trends. We then used a statistical method called Leave-One-Out Cross Validation (LOO) to select the model with the best performance, in this case, our second model.
+We first modeled the number of cyclone landfalls per month and year using Bayesian Poisson regression models (\citeproc{ref-Elsner}{Elsner, Bossak \& Niu, 2001}), in order to explore any seasonality effects and yearly trends. Model A included both a monthly effect and a non-linear yearly effect, due to the high fluctuations in cyclone landfall numbers per year. Model B only included the monthly effect, ignoring any long-term trends. We then used a statistical method called Leave-One-Out Cross Validation (LOO) to select the model with the best performance, in this case, Model B.
 
 Model C then investigated where cyclones were most likely to land, amongst the top 10 countries and territories which have experienced the most cyclone landfalls since 2000. These include Antigua and Barbuda, the Bahamas, Belize, Canada, Cuba, the Dominican Republic, Mexico, Nicaragua, Puerto Rico and the United States of America.
 
@@ -173,7 +173,7 @@ Model B was then used to simulate landfall occurrences in 2025, on a monthly bas
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.82\linewidth]{../outputs/bayesian-analysis-landfall-freq/landfall-monthly-density-plots} 
+{\centering \includegraphics[width=0.82\linewidth]{../outputs/bayesian-analysis-monthly-freq/landfall-monthly-density-plots} 
 
 }
 
@@ -186,7 +186,7 @@ We then took our analysis one step further and examined expected landfall foreca
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-landfall-freq/simple-landfalls-monthly-forecasts} 
+{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-monthly-freq/simple-landfalls-monthly-forecasts} 
 
 }
 
@@ -271,7 +271,7 @@ We took our analysis one step further and examined expected landfall forecasts f
 
 Figure \ref{fig:figs8} displays the total forecasted number of cyclone landfalls per country and territory from 2025 to 2029, showing the 2.5\% and 97.5\% quantiles and the median value of total landfalls for each month.
 
-The forecast predicts the highest number of total landfalls in the United States of America, followed closely by Mexico , with median values of 30 and 29 landfalls, respectively. Puerto Rico, the Dominican Republic and Antigua and Barbuda have the lowest forecasted landfalls, with a median value of total landfalls over the next 5 years close to zero, despite being in the top ten most exposed countries and territories.
+The forecast predicts the highest number of total landfalls in the United States of America, followed closely by Mexico , with median values of 30 and 28 landfalls, respectively. Puerto Rico, the Dominican Republic and Antigua and Barbuda have the lowest forecasted landfalls, with a median value of total landfalls over the next 5 years close to zero, despite being in the top ten most exposed countries and territories.
 
 Our forecasts once again highlight the unpredictability of cyclone landfalls, with considerable spread between the 2.5\% and 97.5\% quantiles for some of our countries and territories such as the United States of America, Mexico, the Bahamas and Cuba. The wide range of uncertainty in our forecasts for these countries once again underlines the importance of continued research into cyclone activity as to refine and improve model predictions.
 
@@ -466,7 +466,7 @@ We ran our MCMC algorithm using 3 parallel Markov chains, 4000 iterations, disca
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-landfall-freq/model-HSGP/HSGP-model-diagnostics} 
+{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-monthly-freq/model-HSGP/HSGP-model-diagnostics} 
 
 }
 
@@ -479,7 +479,7 @@ We then checked model fit by performing a posterior predictive check (we simulat
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-landfall-freq/model-HSGP/HSGP-post-pred-checks} 
+{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-monthly-freq/model-HSGP/HSGP-post-pred-checks} 
 
 }
 
@@ -527,7 +527,7 @@ Similarly to model A, we ran our MCMC algorithm using 3 parallel Markov chains, 
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-landfall-freq/model-no-year-effect/no-year-model-diagnostics} 
+{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-monthly-freq/model-no-year-effect/no-year-model-diagnostics} 
 
 }
 
@@ -540,7 +540,7 @@ We then checked model fit by performing a posterior predictive check, similarly 
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-landfall-freq/model-no-year-effect/no-year-post-pred-checks} 
+{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-monthly-freq/model-no-year-effect/no-year-post-pred-checks} 
 
 }
 
@@ -557,7 +557,7 @@ To compare the predictive performance of our models A and B, we computed the exp
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-landfall-freq/best-model-comp} 
+{\centering \includegraphics[width=1\linewidth]{../outputs/bayesian-analysis-monthly-freq/best-model-comp} 
 
 }
 
@@ -578,7 +578,7 @@ Figure \ref{fig:figs13} shows model performance comparison measures such as:
   se\_elpd\_loo: Standard error of the ELPD for LOO cross-validation
 \end{itemize}
 
-The difference in ELPD between Model B and Model A is approximately 3.73, as can be seen in Figure \ref{fig:figs13}, with a standard error of 3.00. This suggests that Model B has a slightly better predictive performance, but overall, both models behave similarly as this difference is marginal. For simplicity, we used Model B to forecast landfalls per month and year.
+The difference in ELPD between Model B and Model A is approximately 3.75, as can be seen in Figure \ref{fig:figs13}, with a standard error of 3.00. This suggests that Model B has a slightly better predictive performance, but overall, both models behave similarly as this difference is marginal. For simplicity, we used Model B to forecast landfalls per month and year.
 
 \subsection{Model C: Geographical model}\label{model-c-geographical-model}
 
@@ -601,13 +601,11 @@ where
 \item
   \(i\) indexes observations, \(i=1,...,250\);
 \item
-  \(j\) indexes the countries or territories, \(j = 1,...,10\);
-\item
   \(L\) is the number of countries/territories, \(L=10\);
 \item
   \(Y_{i}\) is the observed count of landfalls for observation \(i\);
 \item
-  \(X\) is a \(300 \times 10\) dimensional design matrix consisting of one-hot columns for each location;
+  \(X\) is a \(250 \times 10\) dimensional design matrix consisting of one-hot columns for each location;
 \item
   \(\beta_0\) is the baseline parameter;
 \item
