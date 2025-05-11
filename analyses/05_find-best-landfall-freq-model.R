@@ -16,6 +16,7 @@ library(here)
 library(dplyr)
 library(magrittr)
 library(tidyr)
+library(loo)
 
 #===============================================================================
 # load model fits and data
